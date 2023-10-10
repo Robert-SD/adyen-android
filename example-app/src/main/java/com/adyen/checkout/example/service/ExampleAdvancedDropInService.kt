@@ -29,6 +29,7 @@ import com.adyen.checkout.dropin.ErrorDialog
 import com.adyen.checkout.dropin.FinishedDialog
 import com.adyen.checkout.dropin.OrderDropInServiceResult
 import com.adyen.checkout.dropin.RecurringDropInServiceResult
+import com.adyen.checkout.example.R
 import com.adyen.checkout.example.data.storage.KeyValueStorage
 import com.adyen.checkout.example.extensions.getLogTag
 import com.adyen.checkout.example.extensions.toStringPretty
@@ -357,7 +358,7 @@ class ExampleAdvancedDropInService : DropInService() {
             RecurringDropInServiceResult.PaymentMethodRemoved(storedPaymentMethodId)
         } else {
             Log.e(TAG, "FAILED")
-            RecurringDropInServiceResult.Error(errorDialog = ErrorDialog(message = "IOException"))
+            RecurringDropInServiceResult.Error(errorDialog = ErrorDialog(message = getString(R.string.checkout_stored_payment_removal_error_message)))
         }
     }
 
