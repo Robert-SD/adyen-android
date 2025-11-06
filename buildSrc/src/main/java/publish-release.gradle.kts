@@ -112,9 +112,9 @@ publishing {
     }
 }
 
-signing {
-    sign(publishing.publications)
-}
+// signing {
+//    sign(publishing.publications)
+// }
 
 interface PublishReleasePluginExtension {
     val id: Property<String>
