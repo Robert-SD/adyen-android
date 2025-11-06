@@ -1,0 +1,17 @@
+# jitpack.yml
+
+# 1. Specify Java 17 directly
+jdk:
+  - openjdk17
+
+# 2. Specify the exact build command (NOTE: no 'clean')
+# $JITPACK_TAG is a variable provided by JitPack for the version
+install:
+  - ./gradlew -Pgroup=com.github.Robert-SD -Pversion=$JITPACK_TAG -xtest -xlint assemble publishToMavenLocal
+
+# 3. Specify directories to cache
+# This saves your dependencies and build cache between runs
+cache:
+  directories:
+    - $HOME/.gradle/caches
+    - $HOME/.gradle/wrapper
