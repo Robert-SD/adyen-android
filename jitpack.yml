@@ -6,8 +6,8 @@ jdk:
 
 # 2. Specify the exact build command (NOTE: no 'clean')
 # $JITPACK_TAG is a variable provided by JitPack for the version
-#install:
-#  - ./gradlew -parallel -Pgroup=com.github.Robert-SD -Pversion=$JITPACK_TAG -xtest -xlint :drop-in:publishToMavenLocal
+install:
+  - ./gradlew -Pgroup=com.github.Robert-SD -Pversion=$JITPACK_TAG -xtest -xlint assemble publishToMavenLocal
 
 # 3. Specify directories to cache
 # This saves your dependencies and build cache between runs
