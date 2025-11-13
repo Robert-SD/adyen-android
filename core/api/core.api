@@ -295,6 +295,39 @@ public final class com/adyen/checkout/core/common/exception/ModelSerializationEx
 	public fun <init> (Ljava/lang/Class;Lorg/json/JSONException;)V
 }
 
+public abstract interface class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult {
+}
+
+public abstract interface class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid : com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult {
+}
+
+public final class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid$NonParseableDate : com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid {
+	public static final field $stable I
+	public fun <init> ()V
+}
+
+public final class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid$TooFarInTheFuture : com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid {
+	public static final field $stable I
+	public fun <init> ()V
+}
+
+public final class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid$TooOld : com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Invalid {
+	public static final field $stable I
+	public fun <init> ()V
+}
+
+public final class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult$Valid : com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult {
+	public static final field $stable I
+	public fun <init> ()V
+}
+
+public final class com/adyen/checkout/core/common/helper/CardExpiryDateValidator {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/adyen/checkout/core/common/helper/CardExpiryDateValidator;
+	public final fun validateExpiryDate (Lcom/adyen/checkout/core/common/ui/model/ExpiryDate;)Lcom/adyen/checkout/core/common/helper/CardExpiryDateValidationResult;
+	public final fun validateExpiryDate (Ljava/lang/String;)Lcom/adyen/checkout/core/common/helper/CardExpiryDateValidationResult;
+}
+
 public abstract interface class com/adyen/checkout/core/common/helper/CardNumberValidationResult {
 }
 
@@ -377,6 +410,10 @@ public abstract interface class com/adyen/checkout/core/common/internal/model/Mo
 
 public final class com/adyen/checkout/core/common/localization/CheckoutLocalizationKey : java/lang/Enum {
 	public static final field AWAIT_LOADING Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_EXPIRY_DATE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_EXPIRY_DATE_INVALID Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_EXPIRY_DATE_INVALID_TOO_FAR_IN_THE_FUTURE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_EXPIRY_DATE_INVALID_TOO_OLD Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_NUMBER Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_NUMBER_INVALID Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_NUMBER_INVALID_UNSUPPORTED_BRAND Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
@@ -392,8 +429,27 @@ public abstract interface class com/adyen/checkout/core/common/localization/Chec
 	public abstract fun getString (Landroid/content/Context;Ljava/util/Locale;Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;)Ljava/lang/String;
 }
 
+public final class com/adyen/checkout/core/common/ui/model/ExpiryDate {
+	public static final field $stable I
+	public static final field Companion Lcom/adyen/checkout/core/common/ui/model/ExpiryDate$Companion;
+	public fun <init> (II)V
+	public final fun component1 ()I
+	public final fun component2 ()I
+	public final fun copy (II)Lcom/adyen/checkout/core/common/ui/model/ExpiryDate;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/common/ui/model/ExpiryDate;IIILjava/lang/Object;)Lcom/adyen/checkout/core/common/ui/model/ExpiryDate;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getExpiryMonth ()I
+	public final fun getExpiryYear ()I
+	public fun hashCode ()I
+	public final fun toMMyyString ()Ljava/lang/String;
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/adyen/checkout/core/common/ui/model/ExpiryDate$Companion {
+}
+
 public final class com/adyen/checkout/core/components/AdyenPaymentFlowKt {
-	public static final fun AdyenPaymentFlow (Ljava/lang/String;Lcom/adyen/checkout/core/components/CheckoutContext;Landroidx/compose/ui/Modifier;Lcom/adyen/checkout/ui/theme/CheckoutTheme;Lcom/adyen/checkout/core/components/CheckoutController;Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationProvider;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AdyenPaymentFlow (Ljava/lang/String;Lcom/adyen/checkout/core/components/CheckoutContext;Landroidx/compose/ui/Modifier;Lcom/adyen/checkout/ui/theme/CheckoutTheme;Lcom/adyen/checkout/core/components/CheckoutController;Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationProvider;Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProvider;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/adyen/checkout/core/components/AnalyticsConfiguration : android/os/Parcelable {
@@ -954,6 +1010,43 @@ public final class com/adyen/checkout/core/components/internal/data/model/Status
 	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
 	public final fun newArray (I)[Lcom/adyen/checkout/core/components/internal/data/model/StatusResponse;
 	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy : java/lang/Enum {
+	public static final field FULL_SCREEN_DIALOG Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
+	public static final field INLINE Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
+	public static fun values ()[Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
+}
+
+public abstract interface class com/adyen/checkout/core/components/navigation/CheckoutNavigationKey {
+}
+
+public final class com/adyen/checkout/core/components/navigation/CheckoutNavigationProperties {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun <init> (Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/ContentTransform;Landroidx/compose/animation/ContentTransform;)V
+	public synthetic fun <init> (Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/ContentTransform;Landroidx/compose/animation/ContentTransform;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
+	public final fun component2 ()Lkotlin/jvm/functions/Function2;
+	public final fun component3 ()Lkotlin/jvm/functions/Function2;
+	public final fun component4 ()Landroidx/compose/animation/ContentTransform;
+	public final fun component5 ()Landroidx/compose/animation/ContentTransform;
+	public final fun copy (Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/ContentTransform;Landroidx/compose/animation/ContentTransform;)Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProperties;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProperties;Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Landroidx/compose/animation/ContentTransform;Landroidx/compose/animation/ContentTransform;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProperties;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDisplayStrategy ()Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
+	public final fun getFooter ()Lkotlin/jvm/functions/Function2;
+	public final fun getHeader ()Lkotlin/jvm/functions/Function2;
+	public final fun getInTransitions ()Landroidx/compose/animation/ContentTransform;
+	public final fun getOutTransitions ()Landroidx/compose/animation/ContentTransform;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class com/adyen/checkout/core/components/navigation/CheckoutNavigationProvider {
+	public abstract fun provide (Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationKey;)Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProperties;
 }
 
 public final class com/adyen/checkout/core/components/paymentmethod/CardPaymentMethod : com/adyen/checkout/core/components/paymentmethod/PaymentMethodDetails {

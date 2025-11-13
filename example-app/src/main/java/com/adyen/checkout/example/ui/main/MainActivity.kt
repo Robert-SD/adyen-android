@@ -19,9 +19,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.adyen.checkout.core.components.Checkout
 import com.adyen.checkout.dropin.old.DropIn
 import com.adyen.checkout.dropin.old.DropInCallback
 import com.adyen.checkout.dropin.old.SessionDropInCallback
+import com.adyen.checkout.dropin.startDropIn
 import com.adyen.checkout.example.R
 import com.adyen.checkout.example.databinding.ActivityMainBinding
 import com.adyen.checkout.example.extensions.applyInsetsToRootLayout
@@ -41,7 +43,7 @@ import com.adyen.checkout.example.ui.instant.InstantFragment
 import com.adyen.checkout.example.ui.settings.SettingsActivity
 import com.adyen.checkout.example.ui.v6.V6Activity
 import com.adyen.checkout.example.ui.v6.V6SessionsActivity
-import com.adyen.checkout.redirect.RedirectComponent
+import com.adyen.checkout.redirect.old.RedirectComponent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -171,6 +173,22 @@ class MainActivity : AppCompatActivity() {
                     navigation.checkoutSession,
                     navigation.checkoutConfiguration,
                     ExampleSessionsDropInService::class.java,
+                )
+            }
+
+            is MainNavigation.V6DropIn -> {
+                Checkout.startDropIn(
+                    this,
+                    navigation.paymentMethodsApiResponse,
+                    navigation.checkoutConfiguration,
+                )
+            }
+
+            is MainNavigation.V6DropInWithSession -> {
+                Checkout.startDropIn(
+                    this,
+                    navigation.sessionModel,
+                    navigation.checkoutConfiguration,
                 )
             }
 
