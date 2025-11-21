@@ -17,6 +17,7 @@ import com.adyen.checkout.card.CardMainNavigationKey
 import com.adyen.checkout.card.internal.data.api.DetectCardTypeRepository
 import com.adyen.checkout.card.internal.data.model.DetectedCardType
 import com.adyen.checkout.card.internal.ui.model.CardComponentParams
+import com.adyen.checkout.card.internal.ui.model.selectedBrand
 import com.adyen.checkout.card.internal.ui.state.CardChangeListener
 import com.adyen.checkout.card.internal.ui.state.CardComponentState
 import com.adyen.checkout.card.internal.ui.state.CardPaymentComponentState
@@ -26,6 +27,7 @@ import com.adyen.checkout.core.analytics.internal.AnalyticsManager
 import com.adyen.checkout.core.analytics.internal.ErrorEvent
 import com.adyen.checkout.core.analytics.internal.GenericEvents
 import com.adyen.checkout.core.common.AdyenLogLevel
+import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.helper.runCompileOnly
 import com.adyen.checkout.core.common.internal.helper.adyenLog
 import com.adyen.checkout.core.common.internal.helper.bufferedChannel
@@ -160,6 +162,14 @@ internal class CardComponent(
         }
     }
 
+    override fun onBrandSelected(cardBrand: CardBrand) {
+        stateManager.updateComponentState {
+            copy(
+                selectedCardBrand = cardBrand,
+            )
+        }
+    }
+
     @Suppress("ReturnCount")
     private fun CardViewState.toPaymentComponentState(): CardPaymentComponentState {
         val unencryptedCardBuilder = UnencryptedCard.Builder()
@@ -198,30 +208,30 @@ internal class CardComponent(
                 isValid = false,
             )
         }
-        return mapComponentState(encryptedCard)
+        val cardBrand = dualBrandData?.selectedBrand ?: detectedCardBrands.firstOrNull()
+
+        return mapComponentState(encryptedCard, cardBrand)
     }
 
     private fun mapComponentState(
         encryptedCard: EncryptedCard,
+        cardBrand: CardBrand?
     ): CardPaymentComponentState {
         val cardPaymentMethod = CardPaymentMethod(
             type = CardPaymentMethod.PAYMENT_METHOD_TYPE,
             checkoutAttemptId = analyticsManager.getCheckoutAttemptId(),
-        ).apply {
-            encryptedCardNumber = encryptedCard.encryptedCardNumber
-            encryptedExpiryMonth = encryptedCard.encryptedExpiryMonth
-            encryptedExpiryYear = encryptedCard.encryptedExpiryYear
-
-//            if (!isCvcHidden()) {
-            encryptedSecurityCode = encryptedCard.encryptedSecurityCode
-//            }
-
+            encryptedCardNumber = encryptedCard.encryptedCardNumber,
+            encryptedExpiryMonth = encryptedCard.encryptedExpiryMonth,
+            encryptedExpiryYear = encryptedCard.encryptedExpiryYear,
+            // TODO - Card. Add isCvcHidden check
+            encryptedSecurityCode = encryptedCard.encryptedSecurityCode,
+            threeDS2SdkVersion = runCompileOnly { ThreeDS2Service.INSTANCE.sdkVersion },
+            // TODO - Card. Holder name
 //            if (isHolderNameRequired()) {
 //                holderName = stateOutputData.holderNameState.value
 //            }
-
-            threeDS2SdkVersion = runCompileOnly { ThreeDS2Service.INSTANCE.sdkVersion }
-        }
+            brand = cardBrand?.txVariant,
+        )
 
         val paymentComponentData = PaymentComponentData<CardPaymentMethod>(
             paymentMethod = cardPaymentMethod,

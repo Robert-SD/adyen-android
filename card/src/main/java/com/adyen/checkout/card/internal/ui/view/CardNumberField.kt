@@ -12,25 +12,18 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.maxLength
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.dropShadow
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import com.adyen.checkout.card.R
 import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.CardType
@@ -40,7 +33,6 @@ import com.adyen.checkout.core.common.localization.CheckoutLocalizationKey
 import com.adyen.checkout.core.common.localization.internal.helper.resolveString
 import com.adyen.checkout.core.components.internal.ui.state.model.TextInputState
 import com.adyen.checkout.ui.internal.CheckoutTextField
-import com.adyen.checkout.ui.internal.CheckoutThemeProvider
 import com.adyen.checkout.ui.internal.DigitOnlyInputTransformation
 import com.adyen.checkout.ui.internal.Dimensions
 
@@ -49,7 +41,7 @@ internal fun CardNumberField(
     cardNumberState: TextInputState,
     supportedCardBrands: List<CardBrand>,
     isSupportedCardBrandsShown: Boolean,
-    detectedBrand: CardBrand?,
+    detectedCardBrands: List<CardBrand>,
     isAmex: Boolean?,
     onCardNumberChanged: (String) -> Unit,
     onCardNumberFocusChanged: (Boolean) -> Unit,
@@ -61,7 +53,7 @@ internal fun CardNumberField(
         CardNumberInputField(
             cardNumberState = cardNumberState,
             isAmex = isAmex,
-            detectedBrand = detectedBrand,
+            detectedCardBrands = detectedCardBrands,
             onCardNumberChanged = onCardNumberChanged,
             onCardNumberFocusChanged = onCardNumberFocusChanged,
         )
@@ -77,7 +69,7 @@ internal fun CardNumberField(
 private fun CardNumberInputField(
     cardNumberState: TextInputState,
     isAmex: Boolean?,
-    detectedBrand: CardBrand?,
+    detectedCardBrands: List<CardBrand>,
     onCardNumberChanged: (String) -> Unit,
     onCardNumberFocusChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -114,16 +106,40 @@ private fun CardNumberInputField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         shouldFocus = cardNumberState.isFocused,
         trailingIcon = {
-            CheckoutNetworkLogo(
-                modifier = Modifier
-                    .height(16.dp)
-                    .width(24.dp)
-                    .clip(RoundedCornerShape(Dimensions.CornerRadius)),
-                txVariant = detectedBrand?.txVariant.orEmpty(),
-                placeholder = R.drawable.ic_card_placeholder,
-                errorFallback = R.drawable.ic_card_placeholder,
-            )
+            DetectedBrandsList(detectedCardBrands)
         },
+    )
+}
+
+@Composable
+private fun DetectedBrandsList(
+    detectedCardBrands: List<CardBrand>,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(Dimensions.ExtraSmall),
+    ) {
+        if (detectedCardBrands.isEmpty()) {
+            BrandLogo(txVariant = null)
+        } else {
+            detectedCardBrands.take(2).forEach { cardBrand ->
+                BrandLogo(cardBrand.txVariant)
+            }
+        }
+    }
+}
+
+@Composable
+private fun BrandLogo(
+    txVariant: String?,
+    modifier: Modifier = Modifier,
+) {
+    CheckoutNetworkLogo(
+        modifier = modifier.size(Dimensions.LogoSize.small),
+        txVariant = txVariant.orEmpty(),
+        placeholder = R.drawable.ic_card_placeholder,
+        errorFallback = R.drawable.ic_card_placeholder,
     )
 }
 
@@ -143,20 +159,7 @@ private fun CardBrandsList(
             verticalArrangement = Arrangement.spacedBy(Dimensions.ExtraSmall),
         ) {
             for (cardBrand in cardBrands) {
-                CheckoutNetworkLogo(
-                    modifier = Modifier
-                        .size(24.dp, 16.dp)
-                        .dropShadow(
-                            shape = RoundedCornerShape(Dimensions.CornerRadius),
-                            shadow = Shadow(
-                                radius = 1.dp,
-                                offset = DpOffset(x = 0.dp, 2.dp),
-                                color = CheckoutThemeProvider.colors.container,
-                            ),
-                        )
-                        .clip(RoundedCornerShape(Dimensions.CornerRadius)),
-                    txVariant = cardBrand.txVariant,
-                )
+                BrandLogo(cardBrand.txVariant)
             }
         }
     }
@@ -175,7 +178,7 @@ private fun CardNumberFieldPreview() {
             CardBrand(CardType.AMERICAN_EXPRESS.txVariant),
         ),
         isSupportedCardBrandsShown = true,
-        detectedBrand = CardBrand(CardType.MASTERCARD.txVariant),
+        detectedCardBrands = listOf(CardBrand(CardType.MASTERCARD.txVariant)),
         isAmex = false,
         onCardNumberChanged = {},
         onCardNumberFocusChanged = {},

@@ -8,6 +8,7 @@
 
 package com.adyen.checkout.card.internal.ui.state
 
+import com.adyen.checkout.card.internal.ui.model.DualBrandData
 import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.CardType
 import com.adyen.checkout.core.components.internal.ui.state.ViewState
@@ -19,9 +20,12 @@ internal data class CardViewState(
     val securityCode: TextInputState,
     val supportedCardBrands: List<CardBrand>,
     val isSupportedCardBrandsShown: Boolean,
-    val detectedBrand: CardBrand?,
+    val detectedCardBrands: List<CardBrand>,
     val isLoading: Boolean,
+    val dualBrandData: DualBrandData?,
 ) : ViewState
 
 internal val CardViewState.isAmex: Boolean?
-    get() = detectedBrand?.let { it.txVariant == CardType.AMERICAN_EXPRESS.txVariant }
+    get() = detectedCardBrands.firstOrNull()?.let { detectedCard ->
+        detectedCard.txVariant == CardType.AMERICAN_EXPRESS.txVariant
+    }

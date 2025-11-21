@@ -22,8 +22,9 @@ internal class CardViewStateFactory(
         expiryDate = TextInputState(),
         securityCode = TextInputState(),
         isLoading = false,
-        detectedBrand = null,
+        detectedCardBrands = listOf(),
         supportedCardBrands = componentParams.supportedCardBrands,
         isSupportedCardBrandsShown = true,
+        dualBrandData = null,
     )
 }

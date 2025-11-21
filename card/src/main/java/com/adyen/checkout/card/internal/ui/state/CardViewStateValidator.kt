@@ -9,13 +9,17 @@
 package com.adyen.checkout.card.internal.ui.state
 
 import com.adyen.checkout.card.internal.data.model.DetectedCardType
+import com.adyen.checkout.card.internal.ui.DualBrandedCardHandler
+import com.adyen.checkout.card.internal.ui.model.DualBrandData
 import com.adyen.checkout.card.internal.ui.model.InputFieldUIState
+import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.localization.CheckoutLocalizationKey
 import com.adyen.checkout.core.components.internal.ui.state.ViewStateValidator
 import com.adyen.checkout.core.components.internal.ui.state.model.TextInputState
 
 internal class CardViewStateValidator(
     private val cardValidationMapper: CardValidationMapper,
+    private val dualBrandedCardHandler: DualBrandedCardHandler,
 ) : ViewStateValidator<CardViewState, CardComponentState> {
 
     override fun validate(
@@ -23,27 +27,41 @@ internal class CardViewStateValidator(
         componentState: CardComponentState
     ): CardViewState {
         val isReliable = componentState.detectedCardTypes.any { it.isReliable }
-        val filteredDetectedCardTypes = componentState.detectedCardTypes.filter { it.isSupported }
-        val selectedOrFirstCardType = filteredDetectedCardTypes.firstOrNull()
+        val supportedDetectedCardTypes = componentState.detectedCardTypes.filter { it.isSupported }
+        val firstSupportedDetectedCardType = supportedDetectedCardTypes.firstOrNull()
 
         val cardNumber = viewState.cardNumber
-        val cardNumberError = validateCardNumber(cardNumber, selectedOrFirstCardType, isReliable)
+        val cardNumberError = validateCardNumber(cardNumber, firstSupportedDetectedCardType, isReliable)
 
         val expiryDate = viewState.expiryDate
-        val expiryDateError = validateExpiryDate(expiryDate, selectedOrFirstCardType)
+        val expiryDateError = validateExpiryDate(expiryDate, firstSupportedDetectedCardType)
+
+        val dualBrandData = dualBrandedCardHandler.processDetectedCardTypes(
+            detectedCardTypes = componentState.detectedCardTypes,
+            selectedBrand = componentState.selectedCardBrand,
+        )
+        val detectedCardBrands = getDetectedCardBrands(dualBrandData, firstSupportedDetectedCardType?.cardBrand)
 
         // TODO - Card. Security Code UI State.
         val securityCode = viewState.securityCode
-        val securityCodeError = validateSecurityCode(securityCode, selectedOrFirstCardType, InputFieldUIState.REQUIRED)
+        val securityCodeError =
+            validateSecurityCode(securityCode, firstSupportedDetectedCardType, InputFieldUIState.REQUIRED)
 
         return viewState.copy(
             cardNumber = cardNumber.copy(errorMessage = cardNumberError),
             expiryDate = expiryDate.copy(errorMessage = expiryDateError),
             securityCode = securityCode.copy(errorMessage = securityCodeError),
             // TODO - State: Create an updater logic which would update the viewState when component state is updated
-            isSupportedCardBrandsShown = filteredDetectedCardTypes.isEmpty(),
-            detectedBrand = selectedOrFirstCardType?.cardBrand
+            isSupportedCardBrandsShown = supportedDetectedCardTypes.isEmpty(),
+            detectedCardBrands = detectedCardBrands,
+            dualBrandData = dualBrandData,
         )
+    }
+
+    private fun getDetectedCardBrands(dualBrandData: DualBrandData?, fallbackDetectedCardBrand: CardBrand?) = when {
+        dualBrandData != null -> listOf(dualBrandData.brandOptionFirst.brand, dualBrandData.brandOptionSecond.brand)
+        fallbackDetectedCardBrand != null -> listOf(fallbackDetectedCardBrand)
+        else -> listOf()
     }
 
     override fun isValid(viewState: CardViewState): Boolean {
@@ -70,7 +88,7 @@ internal class CardViewStateValidator(
             securityCode = viewState.securityCode.copy(
                 showError = hasSecurityCodeError,
                 isFocused = hasSecurityCodeError && !hasCardNumberError && !hasExpiryDateError,
-            )
+            ),
         )
     }
 
@@ -104,7 +122,7 @@ internal class CardViewStateValidator(
             validation = CardValidationUtils.validateExpiryDate(
                 expiryDate = expiryDate.text,
                 fieldPolicy = selectedOrFirstCardType?.expiryDatePolicy,
-            )
+            ),
         )
 
         return expiryDateError
@@ -120,7 +138,7 @@ internal class CardViewStateValidator(
                 securityCode = securityCode.text,
                 detectedCardType = selectedOrFirstCardType,
                 uiState = uiState,
-            )
+            ),
         )
     }
 }
