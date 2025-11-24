@@ -8,6 +8,7 @@
 
 package com.adyen.checkout.example.ui.v6
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +19,7 @@ import com.adyen.checkout.core.common.Environment
 import com.adyen.checkout.core.components.Checkout
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
-import com.adyen.checkout.core.components.CheckoutContext
+import com.adyen.checkout.core.components.CheckoutController
 import com.adyen.checkout.core.components.ComponentError
 import com.adyen.checkout.example.BuildConfig
 import com.adyen.checkout.example.data.storage.KeyValueStorage
@@ -26,6 +27,7 @@ import com.adyen.checkout.example.extensions.getLogTag
 import com.adyen.checkout.example.repositories.PaymentsRepository
 import com.adyen.checkout.example.service.getSessionRequest
 import com.adyen.checkout.example.service.getSettingsInstallmentOptionsMode
+import com.adyen.checkout.example.ui.compose.UIText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -42,7 +44,9 @@ internal class V6SessionsViewModel @Inject constructor(
         BuildConfig.CLIENT_KEY,
     )
 
-    var checkoutContext by mutableStateOf<CheckoutContext?>(null)
+    val checkoutController = CheckoutController()
+
+    var uiState by mutableStateOf<V6UiState>(V6UiState.Loading)
 
     init {
         viewModelScope.launch {
@@ -72,19 +76,26 @@ internal class V6SessionsViewModel @Inject constructor(
         val result = Checkout.initialize(
             sessionModel = session,
             checkoutConfiguration = configuration,
-            checkoutCallbacks = CheckoutCallbacks(
-                onError = ::onError,
-            ),
         )
 
-        checkoutContext = when (result) {
-            is Checkout.Result.Error -> null
-            is Checkout.Result.Success -> result.checkoutContext
+        uiState = when (result) {
+            is Checkout.Result.Error -> V6UiState.Error(UIText.String(result.errorReason))
+            is Checkout.Result.Success -> V6UiState.Component(
+                checkoutContext = result.checkoutContext,
+                checkoutCallbacks = CheckoutCallbacks(
+                    onError = ::onError,
+                ),
+                paymentMethods = result.checkoutContext.getPaymentMethods(),
+            )
         }
     }
 
     private fun onError(componentError: ComponentError) {
         Log.d(TAG, "onError: ${componentError.errorMessage}")
+    }
+
+    fun handleIntent(intent: Intent) {
+        checkoutController.handleIntent(intent)
     }
 
     companion object {

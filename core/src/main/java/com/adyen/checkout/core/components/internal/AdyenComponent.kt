@@ -15,14 +15,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adyen.checkout.core.common.CheckoutContext
 import com.adyen.checkout.core.common.localization.CheckoutLocalizationProvider
-import com.adyen.checkout.core.components.CheckoutContext
+import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutController
+import com.adyen.checkout.core.components.navigation.CheckoutNavigationProvider
 
 internal class AdyenComponent(
     applicationContext: Context,
     txVariant: String,
     checkoutContext: CheckoutContext,
+    checkoutCallbacks: CheckoutCallbacks,
     savedStateHandle: SavedStateHandle,
     checkoutController: CheckoutController,
 ) : ViewModel() {
@@ -32,14 +35,19 @@ internal class AdyenComponent(
             applicationContext = applicationContext,
             txVariant = txVariant,
             checkoutContext = checkoutContext,
+            checkoutCallbacks = checkoutCallbacks,
             coroutineScope = viewModelScope,
             savedStateHandle = savedStateHandle,
             checkoutController = checkoutController,
         )
 
     @Composable
-    internal fun ViewFactory(modifier: Modifier = Modifier, localizationProvider: CheckoutLocalizationProvider?) {
-        paymentFacilitator.ViewFactory(modifier, localizationProvider)
+    internal fun ViewFactory(
+        modifier: Modifier,
+        localizationProvider: CheckoutLocalizationProvider?,
+        navigationProvider: CheckoutNavigationProvider?,
+    ) {
+        paymentFacilitator.ViewFactory(modifier, localizationProvider, navigationProvider)
     }
 
     fun observe(lifecycle: Lifecycle) {

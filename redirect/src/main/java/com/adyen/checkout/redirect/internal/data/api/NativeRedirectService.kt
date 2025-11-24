@@ -8,9 +8,9 @@
 
 package com.adyen.checkout.redirect.internal.data.api
 
-import com.adyen.checkout.core.old.DispatcherProvider
-import com.adyen.checkout.core.old.internal.data.api.HttpClient
-import com.adyen.checkout.core.old.internal.data.api.post
+import com.adyen.checkout.core.common.internal.api.DispatcherProvider
+import com.adyen.checkout.core.common.internal.api.HttpClient
+import com.adyen.checkout.core.common.internal.api.post
 import com.adyen.checkout.redirect.internal.data.model.NativeRedirectRequest
 import com.adyen.checkout.redirect.internal.data.model.NativeRedirectResponse
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,8 +29,8 @@ internal class NativeRedirectService(
             path = "v1/nativeRedirect/redirectResult",
             queryParameters = mapOf("clientKey" to clientKey),
             body = request,
-            requestSerializer = NativeRedirectRequest.SERIALIZER,
-            responseSerializer = NativeRedirectResponse.SERIALIZER,
+            requestSerializer = NativeRedirectRequest.Companion.SERIALIZER,
+            responseSerializer = NativeRedirectResponse.Companion.SERIALIZER,
         )
     }
 }

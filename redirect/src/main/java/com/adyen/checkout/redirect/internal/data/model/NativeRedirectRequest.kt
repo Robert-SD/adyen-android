@@ -8,8 +8,8 @@
 
 package com.adyen.checkout.redirect.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
+import com.adyen.checkout.core.common.exception.ModelSerializationException
+import com.adyen.checkout.core.common.internal.model.ModelObject
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject

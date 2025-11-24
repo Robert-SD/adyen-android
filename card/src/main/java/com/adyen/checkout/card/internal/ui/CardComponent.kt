@@ -13,8 +13,11 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.adyen.checkout.card.CardMainNavigationKey
 import com.adyen.checkout.card.internal.data.api.DetectCardTypeRepository
+import com.adyen.checkout.card.internal.data.model.DetectedCardType
 import com.adyen.checkout.card.internal.ui.model.CardComponentParams
+import com.adyen.checkout.card.internal.ui.model.selectedBrand
 import com.adyen.checkout.card.internal.ui.state.CardChangeListener
 import com.adyen.checkout.card.internal.ui.state.CardComponentState
 import com.adyen.checkout.card.internal.ui.state.CardPaymentComponentState
@@ -24,9 +27,11 @@ import com.adyen.checkout.core.analytics.internal.AnalyticsManager
 import com.adyen.checkout.core.analytics.internal.ErrorEvent
 import com.adyen.checkout.core.analytics.internal.GenericEvents
 import com.adyen.checkout.core.common.AdyenLogLevel
+import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.helper.runCompileOnly
 import com.adyen.checkout.core.common.internal.helper.adyenLog
 import com.adyen.checkout.core.common.internal.helper.bufferedChannel
+import com.adyen.checkout.core.common.ui.model.ExpiryDate
 import com.adyen.checkout.core.components.data.PaymentComponentData
 import com.adyen.checkout.core.components.internal.PaymentComponentEvent
 import com.adyen.checkout.core.components.internal.ui.PaymentComponent
@@ -45,9 +50,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.serialization.Serializable
 
 // TODO - Card full implementation
+@Suppress("TooManyFunctions")
 internal class CardComponent(
     private val analyticsManager: AnalyticsManager,
     private val stateManager: StateManager<CardViewState, CardComponentState>,
@@ -64,7 +69,7 @@ internal class CardComponent(
         eventChannel.receiveAsFlow()
 
     override val navigation: Map<NavKey, CheckoutNavEntry> = mapOf(
-        CardNavKey to CheckoutNavEntry(CardNavKey) { backStack -> MainScreen(backStack) },
+        CardNavKey to CheckoutNavEntry(CardNavKey, CardMainNavigationKey) { backStack -> MainScreen(backStack) },
     )
 
     override val navigationStartingPoint: NavKey = CardNavKey
@@ -125,6 +130,46 @@ internal class CardComponent(
     }
 
     // TODO - Card. Extract payment component state creation to a separate file.
+    override fun onExpiryDateChanged(newExpiryDate: String) {
+        stateManager.updateViewStateAndValidate {
+            copy(
+                expiryDate = expiryDate.updateText(newExpiryDate),
+            )
+        }
+    }
+
+    override fun onExpiryDateFocusChanged(hasFocus: Boolean) {
+        stateManager.updateViewState {
+            copy(
+                expiryDate = expiryDate.updateFocus(hasFocus),
+            )
+        }
+    }
+
+    override fun onSecurityCodeChanged(newSecurityCode: String) {
+        stateManager.updateViewStateAndValidate {
+            copy(
+                securityCode = securityCode.updateText(newSecurityCode),
+            )
+        }
+    }
+
+    override fun onSecurityCodeFocusChanged(hasFocus: Boolean) {
+        stateManager.updateViewState {
+            copy(
+                securityCode = securityCode.updateFocus(hasFocus),
+            )
+        }
+    }
+
+    override fun onBrandSelected(cardBrand: CardBrand) {
+        stateManager.updateComponentState {
+            copy(
+                selectedCardBrand = cardBrand,
+            )
+        }
+    }
+
     @Suppress("ReturnCount")
     private fun CardViewState.toPaymentComponentState(): CardPaymentComponentState {
         val unencryptedCardBuilder = UnencryptedCard.Builder()
@@ -140,17 +185,16 @@ internal class CardComponent(
         val encryptedCard: EncryptedCard = try {
             unencryptedCardBuilder.setNumber(cardNumber.text)
 //            if (!isCvcHidden()) {
-//                val cvc = outputData.securityCodeState.value
-//                if (cvc.isNotEmpty()) unencryptedCardBuilder.setCvc(cvc)
+            val cvc = securityCode.text
+            if (cvc.isNotEmpty()) unencryptedCardBuilder.setCvc(cvc)
 //            }
-//            val expiryDateResult = outputData.expiryDateState.value
-//            if (expiryDateResult.isNotBlank()) {
-//                val expiryDate = ExpiryDate.from(expiryDateResult)
-//                unencryptedCardBuilder.setExpiryDate(
-//                    expiryMonth = expiryDate.expiryMonth.toString(),
-//                    expiryYear = expiryDate.expiryYear.toString(),
-//                )
-//            }
+            if (expiryDate.text.isNotBlank()) {
+                val expiryDate = ExpiryDate.from(expiryDate.text)
+                unencryptedCardBuilder.setExpiryDate(
+                    expiryMonth = expiryDate.expiryMonth.toString(),
+                    expiryYear = expiryDate.expiryYear.toString(),
+                )
+            }
 
             cardEncryptor.encryptFields(unencryptedCardBuilder.build(), publicKey)
         } catch (_: EncryptionException) {
@@ -164,30 +208,30 @@ internal class CardComponent(
                 isValid = false,
             )
         }
-        return mapComponentState(encryptedCard)
+        val cardBrand = dualBrandData?.selectedBrand ?: detectedCardBrands.firstOrNull()
+
+        return mapComponentState(encryptedCard, cardBrand)
     }
 
     private fun mapComponentState(
         encryptedCard: EncryptedCard,
+        cardBrand: CardBrand?
     ): CardPaymentComponentState {
         val cardPaymentMethod = CardPaymentMethod(
             type = CardPaymentMethod.PAYMENT_METHOD_TYPE,
             checkoutAttemptId = analyticsManager.getCheckoutAttemptId(),
-        ).apply {
-            encryptedCardNumber = encryptedCard.encryptedCardNumber
-//            encryptedExpiryMonth = encryptedCard.encryptedExpiryMonth
-//            encryptedExpiryYear = encryptedCard.encryptedExpiryYear
-
-//            if (!isCvcHidden()) {
-//                encryptedSecurityCode = encryptedCard.encryptedSecurityCode
-//            }
-
+            encryptedCardNumber = encryptedCard.encryptedCardNumber,
+            encryptedExpiryMonth = encryptedCard.encryptedExpiryMonth,
+            encryptedExpiryYear = encryptedCard.encryptedExpiryYear,
+            // TODO - Card. Add isCvcHidden check
+            encryptedSecurityCode = encryptedCard.encryptedSecurityCode,
+            threeDS2SdkVersion = runCompileOnly { ThreeDS2Service.INSTANCE.sdkVersion },
+            // TODO - Card. Holder name
 //            if (isHolderNameRequired()) {
 //                holderName = stateOutputData.holderNameState.value
 //            }
-
-            threeDS2SdkVersion = runCompileOnly { ThreeDS2Service.INSTANCE.sdkVersion }
-        }
+            brand = cardBrand?.txVariant,
+        )
 
         val paymentComponentData = PaymentComponentData<CardPaymentMethod>(
             paymentMethod = cardPaymentMethod,
@@ -206,17 +250,7 @@ internal class CardComponent(
     private fun subscribeToDetectedCardTypes() {
         detectCardTypeRepository.detectedCardTypesFlow
             .onEach { detectedCardTypes ->
-                adyenLog(AdyenLogLevel.DEBUG) {
-                    "New detected card types emitted - detectedCardTypes: ${detectedCardTypes.map { it.cardBrand }} " +
-                        "- isReliable: ${detectedCardTypes.firstOrNull()?.isReliable}"
-                }
-                // TODO - Card. Optional bin lookup callback.
-//                if (detectedCardTypes != outputData.detectedCardTypes) {
-//                    onBinLookupListener?.invoke(detectedCardTypes.map(DetectedCardType::toBinLookupData))
-//                }
-                stateManager.updateComponentState {
-                    copy(detectedCardTypes = detectedCardTypes)
-                }
+                onDetectedCardTypes(detectedCardTypes)
             }
             .map { detectedCardTypes ->
                 detectedCardTypes.filter { it.isReliable && it.isSupported }.map { it.cardBrand }
@@ -228,7 +262,18 @@ internal class CardComponent(
             }
             .launchIn(coroutineScope)
     }
-}
 
-@Serializable
-private data object CardNavKey : NavKey
+    private fun onDetectedCardTypes(detectedCardTypes: List<DetectedCardType>) {
+        adyenLog(AdyenLogLevel.DEBUG) {
+            "New detected card types emitted - detectedCardTypes: ${detectedCardTypes.map { it.cardBrand }} " +
+                "- isReliable: ${detectedCardTypes.firstOrNull()?.isReliable}"
+        }
+        stateManager.updateComponentState {
+            copy(detectedCardTypes = detectedCardTypes)
+        }
+        // TODO - Card. Optional bin lookup callback.
+//        if (detectedCardTypes != outputData.detectedCardTypes) {
+//            onBinLookupListener?.invoke(detectedCardTypes.map(DetectedCardType::toBinLookupData))
+//        }
+    }
+}

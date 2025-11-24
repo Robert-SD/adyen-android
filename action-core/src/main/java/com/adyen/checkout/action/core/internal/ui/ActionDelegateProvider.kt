@@ -10,7 +10,7 @@ package com.adyen.checkout.action.core.internal.ui
 
 import android.app.Application
 import androidx.lifecycle.SavedStateHandle
-import com.adyen.checkout.adyen3ds2.internal.provider.Adyen3DS2ComponentProvider
+import com.adyen.checkout.adyen3ds2.old.internal.provider.Adyen3DS2ComponentProvider
 import com.adyen.checkout.await.old.internal.provider.AwaitComponentProvider
 import com.adyen.checkout.components.core.CheckoutConfiguration
 import com.adyen.checkout.components.core.PaymentMethodTypes
@@ -28,7 +28,7 @@ import com.adyen.checkout.components.core.internal.ui.model.DropInOverrideParams
 import com.adyen.checkout.core.old.exception.CheckoutException
 import com.adyen.checkout.core.old.internal.util.LocaleProvider
 import com.adyen.checkout.qrcode.internal.provider.QRCodeComponentProvider
-import com.adyen.checkout.redirect.internal.provider.RedirectComponentProvider
+import com.adyen.checkout.redirect.old.internal.provider.RedirectComponentProvider
 import com.adyen.checkout.twint.action.internal.provider.TwintActionComponentProvider
 import com.adyen.checkout.voucher.internal.provider.VoucherComponentProvider
 import com.adyen.checkout.wechatpay.internal.provider.WeChatPayActionComponentProvider

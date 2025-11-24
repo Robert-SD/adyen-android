@@ -8,27 +8,16 @@
 
 package com.adyen.checkout.example.ui.v6
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.adyen.checkout.core.components.AdyenPaymentFlow
 import com.adyen.checkout.example.ui.theme.ExampleTheme
 import com.adyen.checkout.example.ui.theme.UIThemeRepository
+import com.adyen.checkout.example.ui.v6.V6Activity.Companion.RETURN_URL_EXTRA
+import com.adyen.checkout.redirect.old.RedirectComponent
 import com.adyen.checkout.ui.theme.CheckoutColors
 import com.adyen.checkout.ui.theme.CheckoutTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,10 +31,13 @@ class V6SessionsActivity : AppCompatActivity() {
     @Inject
     internal lateinit var uiThemeRepository: UIThemeRepository
 
-    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        // Insert return url in extras, so we can access it in the ViewModel through SavedStateHandle
+        val returnUrl = RedirectComponent.getReturnUrl(applicationContext) + "/v6sessions"
+        intent = (intent ?: Intent()).putExtra(RETURN_URL_EXTRA, returnUrl)
 
         val theme = CheckoutTheme(
             colors = if (uiThemeRepository.isDarkTheme(this)) {
@@ -56,33 +48,22 @@ class V6SessionsActivity : AppCompatActivity() {
         )
 
         setContent {
-            val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
             ExampleTheme(uiThemeRepository.isDarkTheme()) {
-                Scaffold(
-                    containerColor = Color(theme.colors.background.value),
-                    topBar = {
-                        TopAppBar(
-                            title = { Text("v6 components") },
-                            navigationIcon = {
-                                IconButton(onClick = { backPressedDispatcher?.onBackPressed() }) {
-                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                                }
-                            },
-                        )
-                    },
-                ) { contentPadding ->
-                    viewModel.checkoutContext?.let {
-                        AdyenPaymentFlow(
-                            txVariant = "mbway",
-                            checkoutContext = it,
-                            theme = theme,
-                            modifier = Modifier
-                                .padding(contentPadding)
-                                .padding(16.dp),
-                        )
-                    }
-                }
+                V6Screen(
+                    theme = theme,
+                    uiState = viewModel.uiState,
+                    checkoutController = viewModel.checkoutController,
+                )
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+
+        val data = intent.data
+        if (data != null && data.toString().startsWith(RedirectComponent.REDIRECT_RESULT_SCHEME)) {
+            viewModel.handleIntent(intent)
         }
     }
 }
