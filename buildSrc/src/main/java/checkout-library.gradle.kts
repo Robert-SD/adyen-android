@@ -41,7 +41,7 @@ android {
     publishing {
         singleVariant("release") {
             withSourcesJar()
-            withJavadocJar()
+            // withJavadocJar() // for Jitpack v6 temporary build
         }
     }
 }
