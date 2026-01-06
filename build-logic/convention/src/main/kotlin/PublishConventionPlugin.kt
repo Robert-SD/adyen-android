@@ -50,21 +50,21 @@ class PublishConventionPlugin : Plugin<Project> {
         extraProperties.set("sonatypeCentralPortalPassword", "")
         extraProperties.set("sonatypeStagingProfileId", "")
 
-        val secretPropsFile: File = project.rootProject.file("local.properties")
-        if (secretPropsFile.exists()) {
-            val p = Properties()
-            p.load(FileInputStream(secretPropsFile))
-            p.forEach { (name, value) ->
-                extraProperties.set(name.toString(), value)
-            }
-        } else {
+//        val secretPropsFile: File = project.rootProject.file("local.properties")
+//        if (secretPropsFile.exists()) {
+//            val p = Properties()
+//            p.load(FileInputStream(secretPropsFile))
+//            p.forEach { (name, value) ->
+//                extraProperties.set(name.toString(), value)
+//            }
+//        } else {
 //            extraProperties.set("signing.keyId", System.getenv("SIGNING_KEY_ID"))
 //            extraProperties.set("signing.password", System.getenv("SIGNING_PASSWORD"))
 //            extraProperties.set("signing.secretKeyRingFile", System.getenv("SIGNING_SECRET_KEY_RING_FILE"))
 //            extraProperties.set("sonatypeCentralPortalUsername", System.getenv("SONATYPE_CENTRAL_PORTAL_USERNAME"))
 //            extraProperties.set("sonatypeCentralPortalPassword", System.getenv("SONATYPE_CENTRAL_PORTAL_PASSWORD"))
 //            extraProperties.set("sonatypeStagingProfileId", System.getenv("SONATYPE_STAGING_PROFILE_ID"))
-        }
+//        }
     }
 
     private fun Project.configurePublishing(extension: PublishConventionPluginExtension) {
