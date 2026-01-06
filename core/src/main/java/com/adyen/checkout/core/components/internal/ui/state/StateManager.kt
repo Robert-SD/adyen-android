@@ -18,6 +18,8 @@ interface StateManager<V : ViewState, C : ComponentState> {
 
     val viewState: StateFlow<V>
 
+    val componentState: C
+
     fun updateViewState(update: V.() -> V)
 
     fun updateViewStateAndValidate(update: V.() -> V)
@@ -26,9 +28,3 @@ interface StateManager<V : ViewState, C : ComponentState> {
 
     fun highlightAllValidationErrors()
 }
-
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-interface ViewState
-
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-interface ComponentState

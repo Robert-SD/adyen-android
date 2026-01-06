@@ -60,6 +60,7 @@ public final class com/adyen/checkout/core/action/data/ActionTypes {
 	public static final field INSTANCE Lcom/adyen/checkout/core/action/data/ActionTypes;
 	public static final field NATIVE_REDIRECT Ljava/lang/String;
 	public static final field REDIRECT Ljava/lang/String;
+	public static final field THREEDS2 Ljava/lang/String;
 }
 
 public final class com/adyen/checkout/core/action/data/AwaitAction : com/adyen/checkout/core/action/data/Action {
@@ -134,6 +135,50 @@ public final class com/adyen/checkout/core/action/data/RedirectAction$Creator : 
 	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
 	public final fun newArray (I)[Lcom/adyen/checkout/core/action/data/RedirectAction;
 	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/action/data/Threeds2Action : com/adyen/checkout/core/action/data/Action {
+	public static final field $stable I
+	public static final field ACTION_TYPE Ljava/lang/String;
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lcom/adyen/checkout/core/action/data/Threeds2Action$Companion;
+	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getAuthorisationToken ()Ljava/lang/String;
+	public fun getPaymentData ()Ljava/lang/String;
+	public fun getPaymentMethodType ()Ljava/lang/String;
+	public final fun getSubtype ()Ljava/lang/String;
+	public final fun getToken ()Ljava/lang/String;
+	public fun getType ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/adyen/checkout/core/action/data/Threeds2Action$Companion {
+}
+
+public final class com/adyen/checkout/core/action/data/Threeds2Action$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/adyen/checkout/core/action/data/Threeds2Action;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/adyen/checkout/core/action/data/Threeds2Action;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/action/data/Threeds2Action$SubType : java/lang/Enum {
+	public static final field CHALLENGE Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType;
+	public static final field Companion Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType$Companion;
+	public static final field FINGERPRINT Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getValue ()Ljava/lang/String;
+	public static final fun parse (Ljava/lang/String;)Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType;
+	public static fun valueOf (Ljava/lang/String;)Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType;
+	public static fun values ()[Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType;
+}
+
+public final class com/adyen/checkout/core/action/data/Threeds2Action$SubType$Companion {
+	public final fun parse (Ljava/lang/String;)Lcom/adyen/checkout/core/action/data/Threeds2Action$SubType;
 }
 
 public final class com/adyen/checkout/core/analytics/internal/AnalyticsManagerFactory$Companion {
@@ -322,6 +367,162 @@ public final class com/adyen/checkout/core/common/CheckoutContext$Sessions$Creat
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
+public final class com/adyen/checkout/core/common/CheckoutCurrency : java/lang/Enum {
+	public static final field AED Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ALL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field AMD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ANG Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field AOA Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ARS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field AUD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field AWG Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field AZN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BAM Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BBD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BDT Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BGN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BHD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BMD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BND Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BOB Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BRL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BSD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BWP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BYN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field BZD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CAD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CHF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CLP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CNY Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field COP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CRC Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CUP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CVE Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field CZK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field Companion Lcom/adyen/checkout/core/common/CheckoutCurrency$Companion;
+	public static final field DJF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field DKK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field DOP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field DZD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field EGP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ETB Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field EUR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field FJD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field FKP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GBP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GEL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GHS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GIP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GMD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GNF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GTQ Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field GYD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field HKD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field HNL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field HRK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field HTG Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field HUF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field IDR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ILS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field INR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field IQD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ISK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field JMD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field JOD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field JPY Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KES Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KGS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KHR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KMF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KRW Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KWD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KYD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field KZT Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field LAK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field LBP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field LKR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field LYD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MAD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MDL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MKD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MMK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MNT Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MOP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MRU Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MUR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MVR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MWK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MXN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MYR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field MZN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field NAD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field NGN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field NIO Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field NOK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field NPR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field NZD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field OMR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PAB Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PEN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PGK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PHP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PKR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PLN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field PYG Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field QAR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field RON Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field RSD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field RUB Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field RWF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SAR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SBD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SCR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SEK Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SGD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SHP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SLE Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SLL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SOS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SRD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field STN Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SVC Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field SZL Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field THB Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field TND Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field TOP Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field TRY Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field TTD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field TWD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field TZS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field UAH Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field UGX Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field USD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field UYU Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field UZS Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field VEF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field VND Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field VUV Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field WST Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field XAF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field XCD Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field XOF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field XPF Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field YER Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ZAR Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final field ZMW Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static final fun find (Ljava/lang/String;)Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getFractionDigits ()I
+	public static final fun isSupported (Ljava/lang/String;)Z
+	public static fun valueOf (Ljava/lang/String;)Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public static fun values ()[Lcom/adyen/checkout/core/common/CheckoutCurrency;
+}
+
+public final class com/adyen/checkout/core/common/CheckoutCurrency$Companion {
+	public final fun find (Ljava/lang/String;)Lcom/adyen/checkout/core/common/CheckoutCurrency;
+	public final fun isSupported (Ljava/lang/String;)Z
+}
+
 public final class com/adyen/checkout/core/common/Environment : android/os/Parcelable {
 	public static final field $stable I
 	public static final field APSE Lcom/adyen/checkout/core/common/Environment;
@@ -387,6 +588,18 @@ public final class com/adyen/checkout/core/common/PaymentResult$Creator : androi
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
+public abstract class com/adyen/checkout/core/common/exception/CheckoutError : java/lang/RuntimeException {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/adyen/checkout/core/common/exception/ComponentError : com/adyen/checkout/core/common/exception/InternalError {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/adyen/checkout/core/common/exception/HttpException : java/lang/RuntimeException {
 	public static final field $stable I
 	public fun <init> (ILjava/lang/String;Lcom/adyen/checkout/core/common/internal/model/ErrorResponseBody;)V
@@ -394,9 +607,33 @@ public final class com/adyen/checkout/core/common/exception/HttpException : java
 	public final fun getErrorBody ()Lcom/adyen/checkout/core/common/internal/model/ErrorResponseBody;
 }
 
+public abstract class com/adyen/checkout/core/common/exception/ImplementationError : com/adyen/checkout/core/common/exception/CheckoutError {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class com/adyen/checkout/core/common/exception/InternalError : com/adyen/checkout/core/common/exception/CheckoutError {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
 public final class com/adyen/checkout/core/common/exception/ModelSerializationException : java/lang/RuntimeException {
 	public static final field $stable I
 	public fun <init> (Ljava/lang/Class;Lorg/json/JSONException;)V
+}
+
+public abstract class com/adyen/checkout/core/common/exception/NetworkError : com/adyen/checkout/core/common/exception/CheckoutError {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public abstract class com/adyen/checkout/core/common/exception/UserError : com/adyen/checkout/core/common/exception/CheckoutError {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/Throwable;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public abstract interface class com/adyen/checkout/core/common/helper/CardExpiryDateValidationResult {
@@ -541,6 +778,8 @@ public final class com/adyen/checkout/core/common/localization/CheckoutLocalizat
 	public static final field CARD_EXPIRY_DATE_INVALID Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_EXPIRY_DATE_INVALID_TOO_FAR_IN_THE_FUTURE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_EXPIRY_DATE_INVALID_TOO_OLD Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_HOLDER_NAME Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_HOLDER_NAME_INVALID Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_NUMBER Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_NUMBER_INVALID Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_NUMBER_INVALID_UNSUPPORTED_BRAND Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
@@ -548,6 +787,19 @@ public final class com/adyen/checkout/core/common/localization/CheckoutLocalizat
 	public static final field CARD_SECURITY_CODE_HINT_3_DIGITS Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_SECURITY_CODE_HINT_4_DIGITS Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field CARD_SECURITY_CODE_INVALID Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field CARD_STORE_PAYMENT_METHOD Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_MANAGE_FAVORITES_CARDS_SECTION_TITLE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_MANAGE_FAVORITES_OTHERS_SECTION_TITLE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_MANAGE_FAVORITES_TITLE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_OTHER_PAYMENT_METHODS Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_PAYMENT_METHOD_LIST_DESCRIPTION Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_PAYMENT_METHOD_LIST_FAVORITES_SECTION_ACTION Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_PAYMENT_METHOD_LIST_FAVORITES_SECTION_TITLE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_PAYMENT_METHOD_LIST_PAYMENT_OPTIONS_SECTION_TITLE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field DROP_IN_PAYMENT_METHOD_LIST_PAYMENT_OPTIONS_SECTION_TITLE_WITH_FAVORITES Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field GENERAL_BACK Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field GENERAL_CLOSE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
+	public static final field GENERAL_SEARCH_HINT Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field MBWAY_COUNTRY_CODE Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field MBWAY_INVALID_PHONE_NUMBER Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
 	public static final field MBWAY_PHONE_NUMBER Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationKey;
@@ -580,7 +832,7 @@ public final class com/adyen/checkout/core/common/ui/model/ExpiryDate$Companion 
 }
 
 public final class com/adyen/checkout/core/components/AdyenPaymentFlowKt {
-	public static final fun AdyenPaymentFlow (Ljava/lang/String;Lcom/adyen/checkout/core/common/CheckoutContext;Lcom/adyen/checkout/core/components/CheckoutCallbacks;Landroidx/compose/ui/Modifier;Lcom/adyen/checkout/ui/theme/CheckoutTheme;Lcom/adyen/checkout/core/components/CheckoutController;Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationProvider;Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProvider;Landroidx/compose/runtime/Composer;II)V
+	public static final fun AdyenPaymentFlow (Lcom/adyen/checkout/core/components/data/model/PaymentMethodResponse;Lcom/adyen/checkout/core/common/CheckoutContext;Lcom/adyen/checkout/core/components/CheckoutCallbacks;Landroidx/compose/ui/Modifier;Lcom/adyen/checkout/ui/theme/CheckoutTheme;Lcom/adyen/checkout/core/components/CheckoutController;Lcom/adyen/checkout/core/common/localization/CheckoutLocalizationProvider;Lcom/adyen/checkout/core/components/navigation/CheckoutNavigationProvider;Landroidx/compose/runtime/Composer;II)V
 }
 
 public final class com/adyen/checkout/core/components/AnalyticsConfiguration : android/os/Parcelable {
@@ -623,8 +875,8 @@ public abstract interface class com/adyen/checkout/core/components/BeforeSubmitC
 public final class com/adyen/checkout/core/components/Checkout {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/adyen/checkout/core/components/Checkout;
-	public final fun initialize (Lcom/adyen/checkout/core/components/data/model/PaymentMethodsApiResponse;Lcom/adyen/checkout/core/components/CheckoutConfiguration;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
-	public final fun initialize (Lcom/adyen/checkout/core/sessions/SessionModel;Lcom/adyen/checkout/core/components/CheckoutConfiguration;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun setup (Lcom/adyen/checkout/core/components/data/model/PaymentMethodsApiResponse;Lcom/adyen/checkout/core/components/CheckoutConfiguration;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public final fun setup (Lcom/adyen/checkout/core/sessions/SessionModel;Lcom/adyen/checkout/core/components/CheckoutConfiguration;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class com/adyen/checkout/core/components/Checkout$Result {
@@ -716,12 +968,12 @@ public final class com/adyen/checkout/core/components/CheckoutResult$Action : co
 
 public final class com/adyen/checkout/core/components/CheckoutResult$Error : com/adyen/checkout/core/components/CheckoutResult {
 	public static final field $stable I
-	public fun <init> (Lcom/adyen/checkout/core/components/ComponentError;)V
-	public final fun component1 ()Lcom/adyen/checkout/core/components/ComponentError;
-	public final fun copy (Lcom/adyen/checkout/core/components/ComponentError;)Lcom/adyen/checkout/core/components/CheckoutResult$Error;
-	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/CheckoutResult$Error;Lcom/adyen/checkout/core/components/ComponentError;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/CheckoutResult$Error;
+	public fun <init> (Lcom/adyen/checkout/core/common/exception/CheckoutError;)V
+	public final fun component1 ()Lcom/adyen/checkout/core/common/exception/CheckoutError;
+	public final fun copy (Lcom/adyen/checkout/core/common/exception/CheckoutError;)Lcom/adyen/checkout/core/components/CheckoutResult$Error;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/CheckoutResult$Error;Lcom/adyen/checkout/core/common/exception/CheckoutError;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/CheckoutResult$Error;
 	public fun equals (Ljava/lang/Object;)Z
-	public final fun getComponentError ()Lcom/adyen/checkout/core/components/ComponentError;
+	public final fun getError ()Lcom/adyen/checkout/core/common/exception/CheckoutError;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -740,19 +992,12 @@ public final class com/adyen/checkout/core/components/CheckoutResult$Finished : 
 	public fun toString ()Ljava/lang/String;
 }
 
-public final class com/adyen/checkout/core/components/ComponentError {
-	public static final field $stable I
-	public fun <init> (Ljava/lang/RuntimeException;)V
-	public final fun getErrorMessage ()Ljava/lang/String;
-	public final fun getException ()Ljava/lang/RuntimeException;
-}
-
 public abstract interface class com/adyen/checkout/core/components/OnAdditionalDetailsCallback : com/adyen/checkout/core/components/CheckoutCallback {
 	public abstract fun onAdditionalDetails (Lcom/adyen/checkout/core/action/data/ActionComponentData;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
 }
 
 public abstract interface class com/adyen/checkout/core/components/OnErrorCallback : com/adyen/checkout/core/components/CheckoutCallback {
-	public abstract fun onError (Lcom/adyen/checkout/core/components/ComponentError;)V
+	public abstract fun onError (Lcom/adyen/checkout/core/common/exception/CheckoutError;)V
 }
 
 public abstract interface class com/adyen/checkout/core/components/OnFinishedCallback : com/adyen/checkout/core/components/CheckoutCallback {
@@ -1025,19 +1270,196 @@ public final class com/adyen/checkout/core/components/data/model/Amount$Creator 
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
-public final class com/adyen/checkout/core/components/data/model/PaymentMethod : com/adyen/checkout/core/common/internal/model/ModelObject {
+public final class com/adyen/checkout/core/components/data/model/AppData : com/adyen/checkout/core/common/internal/model/ModelObject {
 	public static final field $stable I
 	public static final field CREATOR Landroid/os/Parcelable$Creator;
-	public static final field Companion Lcom/adyen/checkout/core/components/data/model/PaymentMethod$Companion;
+	public static final field Companion Lcom/adyen/checkout/core/components/data/model/AppData$Companion;
 	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
 	public fun <init> ()V
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
 	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/data/model/PaymentMethod;
-	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/PaymentMethod;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/PaymentMethod;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/data/model/AppData;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/AppData;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/AppData;
 	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/adyen/checkout/core/components/data/model/AppData$Companion {
+}
+
+public final class com/adyen/checkout/core/components/data/model/AppData$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/adyen/checkout/core/components/data/model/AppData;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/adyen/checkout/core/components/data/model/AppData;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/components/data/model/Configuration : com/adyen/checkout/core/common/internal/model/ModelObject {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lcom/adyen/checkout/core/components/data/model/Configuration$Companion;
+	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/data/model/Configuration;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/Configuration;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/Configuration;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getClientId ()Ljava/lang/String;
+	public final fun getGatewayMerchantId ()Ljava/lang/String;
+	public final fun getIntent ()Ljava/lang/String;
+	public final fun getKoreanAuthenticationRequired ()Ljava/lang/String;
+	public final fun getMerchantId ()Ljava/lang/String;
+	public final fun getScopeId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/adyen/checkout/core/components/data/model/Configuration$Companion {
+}
+
+public final class com/adyen/checkout/core/components/data/model/Configuration$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/adyen/checkout/core/components/data/model/Configuration;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/adyen/checkout/core/components/data/model/Configuration;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/components/data/model/InputDetail : com/adyen/checkout/core/common/internal/model/ModelObject {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lcom/adyen/checkout/core/components/data/model/InputDetail$Companion;
+	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/util/List;
+	public final fun copy (Ljava/util/List;)Lcom/adyen/checkout/core/components/data/model/InputDetail;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/InputDetail;Ljava/util/List;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/InputDetail;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getItems ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/adyen/checkout/core/components/data/model/InputDetail$Companion {
+}
+
+public final class com/adyen/checkout/core/components/data/model/InputDetail$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/adyen/checkout/core/components/data/model/InputDetail;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/adyen/checkout/core/components/data/model/InputDetail;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/components/data/model/Issuer : com/adyen/checkout/core/common/internal/model/ModelObject {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lcom/adyen/checkout/core/components/data/model/Issuer$Companion;
+	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Z)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ZILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Z
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Z)Lcom/adyen/checkout/core/components/data/model/Issuer;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/Issuer;Ljava/lang/String;Ljava/lang/String;ZILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/Issuer;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun isDisabled ()Z
+	public fun toString ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/adyen/checkout/core/components/data/model/Issuer$Companion {
+}
+
+public final class com/adyen/checkout/core/components/data/model/Issuer$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/adyen/checkout/core/components/data/model/Issuer;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/adyen/checkout/core/components/data/model/Issuer;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/components/data/model/Item : com/adyen/checkout/core/common/internal/model/ModelObject {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lcom/adyen/checkout/core/components/data/model/Item$Companion;
+	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/data/model/Item;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/Item;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/Item;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getId ()Ljava/lang/String;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+	public final fun writeToParcel (Landroid/os/Parcel;I)V
+}
+
+public final class com/adyen/checkout/core/components/data/model/Item$Companion {
+}
+
+public final class com/adyen/checkout/core/components/data/model/Item$Creator : android/os/Parcelable$Creator {
+	public fun <init> ()V
+	public final fun createFromParcel (Landroid/os/Parcel;)Lcom/adyen/checkout/core/components/data/model/Item;
+	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
+	public final fun newArray (I)[Lcom/adyen/checkout/core/components/data/model/Item;
+	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public final class com/adyen/checkout/core/components/data/model/PaymentMethod : com/adyen/checkout/core/common/internal/model/ModelObject, com/adyen/checkout/core/components/data/model/PaymentMethodResponse {
+	public static final field $stable I
+	public static final field CREATOR Landroid/os/Parcelable$Creator;
+	public static final field Companion Lcom/adyen/checkout/core/components/data/model/PaymentMethod$Companion;
+	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/adyen/checkout/core/components/data/model/Configuration;Ljava/util/List;Ljava/util/List;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/adyen/checkout/core/components/data/model/Configuration;Ljava/util/List;Ljava/util/List;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/util/List;
+	public final fun component4 ()Ljava/lang/String;
+	public final fun component5 ()Ljava/lang/String;
+	public final fun component6 ()Ljava/util/List;
+	public final fun component7 ()Lcom/adyen/checkout/core/components/data/model/Configuration;
+	public final fun component8 ()Ljava/util/List;
+	public final fun component9 ()Ljava/util/List;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/adyen/checkout/core/components/data/model/Configuration;Ljava/util/List;Ljava/util/List;)Lcom/adyen/checkout/core/components/data/model/PaymentMethod;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/data/model/PaymentMethod;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Lcom/adyen/checkout/core/components/data/model/Configuration;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/data/model/PaymentMethod;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getApps ()Ljava/util/List;
+	public final fun getBrand ()Ljava/lang/String;
+	public final fun getBrands ()Ljava/util/List;
+	public final fun getConfiguration ()Lcom/adyen/checkout/core/components/data/model/Configuration;
+	public final fun getDetails ()Ljava/util/List;
+	public final fun getFundingSource ()Ljava/lang/String;
+	public final fun getIssuers ()Ljava/util/List;
 	public final fun getName ()Ljava/lang/String;
 	public final fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1054,6 +1476,9 @@ public final class com/adyen/checkout/core/components/data/model/PaymentMethod$C
 	public synthetic fun createFromParcel (Landroid/os/Parcel;)Ljava/lang/Object;
 	public final fun newArray (I)[Lcom/adyen/checkout/core/components/data/model/PaymentMethod;
 	public synthetic fun newArray (I)[Ljava/lang/Object;
+}
+
+public abstract interface class com/adyen/checkout/core/components/data/model/PaymentMethodResponse {
 }
 
 public final class com/adyen/checkout/core/components/data/model/PaymentMethodsApiResponse : com/adyen/checkout/core/common/internal/model/ModelObject {
@@ -1087,7 +1512,7 @@ public final class com/adyen/checkout/core/components/data/model/PaymentMethodsA
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
-public final class com/adyen/checkout/core/components/data/model/StoredPaymentMethod : com/adyen/checkout/core/common/internal/model/ModelObject {
+public final class com/adyen/checkout/core/components/data/model/StoredPaymentMethod : com/adyen/checkout/core/common/internal/model/ModelObject, com/adyen/checkout/core/components/data/model/PaymentMethodResponse {
 	public static final field $stable I
 	public static final field CREATOR Landroid/os/Parcelable$Creator;
 	public static final field Companion Lcom/adyen/checkout/core/components/data/model/StoredPaymentMethod$Companion;
@@ -1179,6 +1604,9 @@ public final class com/adyen/checkout/core/components/internal/data/model/Status
 	public synthetic fun newArray (I)[Ljava/lang/Object;
 }
 
+public final class com/adyen/checkout/core/components/internal/data/provider/DefaultSdkDataProvider$Companion {
+}
+
 public final class com/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy : java/lang/Enum {
 	public static final field FULL_SCREEN_DIALOG Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
 	public static final field INLINE Lcom/adyen/checkout/core/components/navigation/CheckoutDisplayStrategy;
@@ -1222,13 +1650,12 @@ public final class com/adyen/checkout/core/components/paymentmethod/CardPaymentM
 	public static final field Companion Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod$Companion;
 	public static final field PAYMENT_METHOD_TYPE Ljava/lang/String;
 	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component10 ()Ljava/lang/String;
 	public final fun component11 ()Ljava/lang/String;
 	public final fun component12 ()Ljava/lang/String;
-	public final fun component13 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun component4 ()Ljava/lang/String;
@@ -1237,11 +1664,10 @@ public final class com/adyen/checkout/core/components/paymentmethod/CardPaymentM
 	public final fun component7 ()Ljava/lang/String;
 	public final fun component8 ()Ljava/lang/String;
 	public final fun component9 ()Ljava/lang/String;
-	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod;
-	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/paymentmethod/CardPaymentMethod;
 	public fun equals (Ljava/lang/Object;)Z
 	public final fun getBrand ()Ljava/lang/String;
-	public fun getCheckoutAttemptId ()Ljava/lang/String;
 	public final fun getEncryptedCardNumber ()Ljava/lang/String;
 	public final fun getEncryptedExpiryMonth ()Ljava/lang/String;
 	public final fun getEncryptedExpiryYear ()Ljava/lang/String;
@@ -1249,9 +1675,9 @@ public final class com/adyen/checkout/core/components/paymentmethod/CardPaymentM
 	public final fun getEncryptedSecurityCode ()Ljava/lang/String;
 	public final fun getFundingSource ()Ljava/lang/String;
 	public final fun getHolderName ()Ljava/lang/String;
+	public fun getSdkData ()Ljava/lang/String;
 	public final fun getStoredPaymentMethodId ()Ljava/lang/String;
 	public final fun getTaxNumber ()Ljava/lang/String;
-	public final fun getThreeDS2SdkVersion ()Ljava/lang/String;
 	public fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
@@ -1275,13 +1701,14 @@ public final class com/adyen/checkout/core/components/paymentmethod/GenericPayme
 	public static final field Companion Lcom/adyen/checkout/core/components/paymentmethod/GenericPaymentMethod$Companion;
 	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 	public final fun component1 ()Ljava/lang/String;
 	public final fun component2 ()Ljava/lang/String;
 	public final fun component3 ()Ljava/lang/String;
 	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/paymentmethod/GenericPaymentMethod;
 	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/paymentmethod/GenericPaymentMethod;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/paymentmethod/GenericPaymentMethod;
 	public fun equals (Ljava/lang/Object;)Z
-	public fun getCheckoutAttemptId ()Ljava/lang/String;
+	public fun getSdkData ()Ljava/lang/String;
 	public final fun getSubtype ()Ljava/lang/String;
 	public fun getType ()Ljava/lang/String;
 	public fun hashCode ()I
@@ -1307,9 +1734,18 @@ public final class com/adyen/checkout/core/components/paymentmethod/MBWayPayment
 	public static final field PAYMENT_METHOD_TYPE Ljava/lang/String;
 	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
 	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	public fun getCheckoutAttemptId ()Ljava/lang/String;
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Lcom/adyen/checkout/core/components/paymentmethod/MBWayPaymentMethod;
+	public static synthetic fun copy$default (Lcom/adyen/checkout/core/components/paymentmethod/MBWayPaymentMethod;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/adyen/checkout/core/components/paymentmethod/MBWayPaymentMethod;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getSdkData ()Ljava/lang/String;
 	public final fun getTelephoneNumber ()Ljava/lang/String;
 	public fun getType ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
 	public final fun writeToParcel (Landroid/os/Parcel;I)V
 }
 
@@ -1331,12 +1767,12 @@ public abstract interface class com/adyen/checkout/core/components/paymentmethod
 
 public abstract class com/adyen/checkout/core/components/paymentmethod/PaymentMethodDetails : com/adyen/checkout/core/common/internal/model/ModelObject {
 	public static final field $stable I
-	public static final field CHECKOUT_ATTEMPT_ID Ljava/lang/String;
 	public static final field Companion Lcom/adyen/checkout/core/components/paymentmethod/PaymentMethodDetails$Companion;
+	public static final field SDK_DATA Ljava/lang/String;
 	public static final field SERIALIZER Lcom/adyen/checkout/core/common/internal/model/ModelObject$Serializer;
 	public static final field TYPE Ljava/lang/String;
 	public fun <init> ()V
-	public abstract fun getCheckoutAttemptId ()Ljava/lang/String;
+	public abstract fun getSdkData ()Ljava/lang/String;
 	public abstract fun getType ()Ljava/lang/String;
 }
 

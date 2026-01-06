@@ -8,53 +8,258 @@
 
 package com.adyen.checkout.dropin.internal.ui
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.adyen.checkout.ui.internal.CheckoutThemeProvider
-import com.adyen.checkout.ui.internal.Dimensions
-import com.adyen.checkout.ui.internal.Title
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.adyen.checkout.core.common.Environment
+import com.adyen.checkout.core.common.internal.helper.CheckoutCompositionLocalProvider
+import com.adyen.checkout.core.common.internal.ui.CheckoutNetworkLogo
+import com.adyen.checkout.core.common.localization.CheckoutLocalizationKey
+import com.adyen.checkout.core.common.localization.internal.helper.resolveString
+import com.adyen.checkout.dropin.internal.ui.PaymentMethodListViewState.FavoritesSection
+import com.adyen.checkout.dropin.internal.ui.PaymentMethodListViewState.PaymentMethodItem
+import com.adyen.checkout.dropin.internal.ui.PaymentMethodListViewState.PaymentOptionsSection
+import com.adyen.checkout.ui.internal.element.ListItem
+import com.adyen.checkout.ui.internal.text.Body
+import com.adyen.checkout.ui.internal.text.BodyEmphasized
+import com.adyen.checkout.ui.internal.text.SubHeadlineEmphasized
+import com.adyen.checkout.ui.internal.theme.CheckoutThemeProvider
+import com.adyen.checkout.ui.internal.theme.Dimensions
+import java.util.Locale
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun PaymentMethodListScreen() {
-    Scaffold(
-        containerColor = CheckoutThemeProvider.colors.background,
-        topBar = {
-            TopAppBar(
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CheckoutThemeProvider.colors.background,
-                    navigationIconContentColor = CheckoutThemeProvider.colors.text,
-                ),
-                title = {},
-                navigationIcon = {
-                    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-                    IconButton(
-                        onClick = { backPressedDispatcher?.onBackPressed() },
-                    ) {
-                        // TODO - String resources
-                        Icon(Icons.Default.Close, "Close")
-                    }
-                },
-            )
+internal fun PaymentMethodListScreen(
+    navigator: DropInNavigator,
+    viewModel: PaymentMethodListViewModel,
+) {
+    val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+    PaymentMethodListContent(navigator, viewState)
+}
+
+@Composable
+private fun PaymentMethodListContent(
+    navigator: DropInNavigator,
+    viewState: PaymentMethodListViewState,
+) {
+    DropInScaffold(
+        navigationIcon = {
+            IconButton(
+                onClick = { navigator.back() },
+            ) {
+                Icon(Icons.Default.Close, resolveString(CheckoutLocalizationKey.GENERAL_CLOSE))
+            }
         },
+        title = viewState.amount,
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = Dimensions.Large),
+                .verticalScroll(rememberScrollState()),
         ) {
-            Title("Payment method list")
+            Body(
+                text = resolveString(CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_LIST_DESCRIPTION),
+                color = CheckoutThemeProvider.colors.textSecondary,
+                modifier = Modifier
+                    .padding(
+                        start = Dimensions.Large,
+                        top = Dimensions.ExtraSmall,
+                        end = Dimensions.Large,
+                        bottom = Dimensions.Medium,
+                    ),
+            )
+
+            viewState.favoritesSection?.let {
+                FavoritesSection(
+                    favoritesSection = it,
+                    onActionClick = { navigator.navigateTo(ManageFavoritesNavKey) },
+                )
+
+                Spacer(Modifier.size(Dimensions.Small))
+            }
+
+            viewState.paymentOptionsSection?.let {
+                PaymentOptionsSection(it)
+            }
         }
+    }
+}
+
+@Composable
+private fun FavoritesSection(
+    favoritesSection: FavoritesSection,
+    onActionClick: (() -> Unit),
+) {
+    Column {
+        SectionHeader(
+            title = resolveString(CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_LIST_FAVORITES_SECTION_TITLE),
+            actionText = resolveString(CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_LIST_FAVORITES_SECTION_ACTION),
+            onActionClick = onActionClick,
+        )
+
+        PaymentMethodItemList(
+            paymentMethodItems = favoritesSection.options,
+            onItemClick = {},
+        )
+    }
+}
+
+@Composable
+private fun PaymentOptionsSection(
+    paymentOptionsSection: PaymentOptionsSection,
+) {
+    Column {
+        SectionHeader(title = resolveString(paymentOptionsSection.title))
+
+        PaymentMethodItemList(
+            paymentMethodItems = paymentOptionsSection.options,
+            onItemClick = {},
+        )
+    }
+}
+
+@Composable
+private fun SectionHeader(
+    title: String,
+    modifier: Modifier = Modifier,
+    actionText: String? = null,
+    onActionClick: (() -> Unit)? = null,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        SubHeadlineEmphasized(
+            text = title,
+            modifier = Modifier.padding(horizontal = Dimensions.Large, vertical = Dimensions.Medium),
+        )
+
+        actionText?.let {
+            TextButton(
+                text = actionText,
+                onClick = { onActionClick?.invoke() },
+            )
+        }
+    }
+}
+
+@Composable
+private fun TextButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BodyEmphasized(
+        text = text,
+        color = CheckoutThemeProvider.colors.highlight,
+        modifier = modifier
+            .clip(CircleShape)
+            .clickable(
+                interactionSource = null,
+                indication = ripple(),
+                role = Role.Button,
+                onClick = onClick,
+            )
+            .padding(horizontal = Dimensions.Large, vertical = Dimensions.Medium),
+    )
+}
+
+@Composable
+private fun PaymentMethodItemList(
+    paymentMethodItems: List<PaymentMethodItem>,
+    onItemClick: (PaymentMethodItem) -> Unit,
+) {
+    Column {
+        paymentMethodItems.forEach { item ->
+            ListItem(
+                leadingIcon = {
+                    CheckoutNetworkLogo(
+                        txVariant = item.icon,
+                        modifier = Modifier.size(Dimensions.LogoSize.medium),
+                    )
+                },
+                title = item.title,
+                subtitle = item.subtitle,
+                onClick = { onItemClick(item) },
+                modifier = Modifier.padding(horizontal = Dimensions.ExtraSmall),
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PaymentMethodListContentPreview() {
+    CheckoutCompositionLocalProvider(
+        locale = Locale.getDefault(),
+        localizationProvider = null,
+        environment = Environment.TEST,
+    ) {
+        val storedPaymentMethods = listOf(
+            PaymentMethodItem(
+                icon = "mc",
+                title = "Mastercard •••• 0023",
+                subtitle = "AAdvantage card",
+            ),
+            PaymentMethodItem(
+                icon = "wechat",
+                title = "@someName",
+                subtitle = "WeChat Pay",
+            ),
+        )
+
+        val paymentMethods = listOf(
+            PaymentMethodItem(
+                icon = "card",
+                title = "Cards",
+            ),
+            PaymentMethodItem(
+                icon = "klarna",
+                title = "Klarna pay in 30 days",
+            ),
+            PaymentMethodItem(
+                icon = "ideal",
+                title = "iDEAL",
+            ),
+        )
+
+        val paymentOptionsTitle =
+            CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_LIST_PAYMENT_OPTIONS_SECTION_TITLE_WITH_FAVORITES
+        PaymentMethodListContent(
+            navigator = DropInNavigator(),
+            viewState = PaymentMethodListViewState(
+                amount = "$140.38",
+                favoritesSection = FavoritesSection(
+                    options = storedPaymentMethods,
+                ),
+                paymentOptionsSection = PaymentOptionsSection(
+                    title = paymentOptionsTitle,
+                    options = paymentMethods,
+                ),
+            ),
+        )
     }
 }

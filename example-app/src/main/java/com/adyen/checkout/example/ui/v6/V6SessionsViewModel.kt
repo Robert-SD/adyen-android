@@ -13,14 +13,15 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adyen.checkout.core.common.Environment
+import com.adyen.checkout.core.common.exception.CheckoutError
 import com.adyen.checkout.core.components.Checkout
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.CheckoutController
-import com.adyen.checkout.core.components.ComponentError
 import com.adyen.checkout.example.BuildConfig
 import com.adyen.checkout.example.data.storage.KeyValueStorage
 import com.adyen.checkout.example.extensions.getLogTag
@@ -34,6 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 internal class V6SessionsViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val paymentsRepository: PaymentsRepository,
     private val keyValueStorage: KeyValueStorage,
 ) : ViewModel() {
@@ -64,8 +66,8 @@ internal class V6SessionsViewModel @Inject constructor(
                 shopperLocale = keyValueStorage.getShopperLocale(),
                 splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),
                 threeDSMode = keyValueStorage.getThreeDSMode(),
-                // TODO - Replace with correct URL once redirects are implemented
-                redirectUrl = "test",
+                redirectUrl = savedStateHandle.get<String>(V6SessionsActivity.RETURN_URL_EXTRA)
+                    ?: error("Return url should be set"),
                 shopperEmail = keyValueStorage.getShopperEmail(),
                 installmentOptions = getSettingsInstallmentOptionsMode(keyValueStorage.getInstallmentOptionsMode()),
                 showInstallmentAmount = keyValueStorage.isInstallmentAmountShown(),
@@ -73,7 +75,7 @@ internal class V6SessionsViewModel @Inject constructor(
             ),
         ) ?: return
 
-        val result = Checkout.initialize(
+        val result = Checkout.setup(
             sessionModel = session,
             checkoutConfiguration = configuration,
         )
@@ -90,8 +92,8 @@ internal class V6SessionsViewModel @Inject constructor(
         }
     }
 
-    private fun onError(componentError: ComponentError) {
-        Log.d(TAG, "onError: ${componentError.errorMessage}")
+    private fun onError(error: CheckoutError) {
+        Log.d(TAG, "onError: ${error.message}")
     }
 
     fun handleIntent(intent: Intent) {

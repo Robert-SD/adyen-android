@@ -12,8 +12,8 @@ plugins {
     alias libs.plugins.kotlin.compose
     alias libs.plugins.ksp
     alias libs.plugins.hilt
-    alias libs.plugins.detekt.convention
-    alias libs.plugins.ktlint.convention
+    alias libs.plugins.checkout.detekt
+    alias libs.plugins.checkout.ktlint
 }
 
 if (file("local.gradle").exists()) {
@@ -55,6 +55,14 @@ android {
             debuggable false
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        acceptance {
+            applicationIdSuffix ".acc"
+            debuggable false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            matchingFallbacks = ['release']
         }
     }
 

@@ -8,7 +8,6 @@
 
 package com.adyen.checkout.dropin.internal.ui
 
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,45 +18,69 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation3.runtime.NavKey
-import com.adyen.checkout.ui.internal.Body
-import com.adyen.checkout.ui.internal.CheckoutThemeProvider
-import com.adyen.checkout.ui.internal.Dimensions
-import com.adyen.checkout.ui.internal.PrimaryButton
-import com.adyen.checkout.ui.internal.SecondaryButton
-import com.adyen.checkout.ui.internal.Title
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.adyen.checkout.core.common.internal.ui.CheckoutNetworkLogo
+import com.adyen.checkout.core.common.localization.CheckoutLocalizationKey
+import com.adyen.checkout.core.common.localization.internal.helper.resolveString
+import com.adyen.checkout.ui.internal.element.button.PrimaryButton
+import com.adyen.checkout.ui.internal.element.button.SecondaryButton
+import com.adyen.checkout.ui.internal.text.Body
+import com.adyen.checkout.ui.internal.text.Title
+import com.adyen.checkout.ui.internal.theme.CheckoutThemeProvider
+import com.adyen.checkout.ui.internal.theme.Dimensions
 
 @Composable
 internal fun PreselectedPaymentMethodScreen(
-    backStack: SnapshotStateList<NavKey>,
+    navigator: DropInNavigator,
+    viewModel: PreselectedPaymentMethodViewModel,
 ) {
-    val backPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    val viewState by viewModel.viewState.collectAsStateWithLifecycle()
+    PreselectedPaymentMethodContent(navigator, viewState)
+}
+
+@Composable
+private fun PreselectedPaymentMethodContent(
+    navigator: DropInNavigator,
+    viewState: PreselectedPaymentMethodViewState,
+) {
     Column(Modifier.fillMaxWidth()) {
         IconButton(
-            onClick = { backPressedDispatcher?.onBackPressed() },
+            onClick = { navigator.back() },
         ) {
-            // TODO - String resources
-            Icon(Icons.Default.Close, "Close")
+            Icon(Icons.Default.Close, resolveString(CheckoutLocalizationKey.GENERAL_CLOSE))
         }
 
-        // TODO - Center text
+        Spacer(Modifier.size(Dimensions.ExtraLarge))
+
+        CheckoutNetworkLogo(
+            txVariant = viewState.logoTxVariant,
+            contentDescription = null,
+            modifier = Modifier
+                .size(Dimensions.LogoSize.large)
+                .align(Alignment.CenterHorizontally),
+        )
+
+        Spacer(Modifier.size(Dimensions.ExtraLarge))
+
         Title(
-            text = "Stored payment method",
-            modifier = Modifier.padding(horizontal = Dimensions.Large),
+            text = viewState.title,
+            modifier = Modifier
+                .padding(horizontal = Dimensions.Large)
+                .align(Alignment.CenterHorizontally),
         )
 
         Spacer(Modifier.size(Dimensions.Small))
 
-        // TODO - Center text
         Body(
-            text = "Description",
+            text = viewState.subtitle,
             color = CheckoutThemeProvider.colors.textSecondary,
-            modifier = Modifier.padding(horizontal = Dimensions.Large),
+            modifier = Modifier
+                .padding(horizontal = Dimensions.Large)
+                .align(Alignment.CenterHorizontally),
         )
 
         Spacer(Modifier.size(Dimensions.Large))
@@ -65,7 +88,7 @@ internal fun PreselectedPaymentMethodScreen(
 
         PrimaryButton(
             onClick = {},
-            text = "Pay now",
+            text = viewState.payButtonText,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Dimensions.Large),
@@ -75,11 +98,9 @@ internal fun PreselectedPaymentMethodScreen(
 
         SecondaryButton(
             onClick = {
-                backStack.removeLastOrNull()
-                backStack.add(PaymentMethodListNavKey)
+                navigator.clearAndNavigateTo(PaymentMethodListNavKey)
             },
-            // TODO - String resources
-            text = "Other payment solutions",
+            text = resolveString(CheckoutLocalizationKey.DROP_IN_OTHER_PAYMENT_METHODS),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = Dimensions.Large),
@@ -90,7 +111,15 @@ internal fun PreselectedPaymentMethodScreen(
 @Preview(showBackground = true)
 @Composable
 private fun PreselectedPaymentMethodScreenPreview() {
-    PreselectedPaymentMethodScreen(
-        backStack = remember { mutableStateListOf() },
+    val title = "Visa •••• 1234"
+    val viewState = PreselectedPaymentMethodViewState(
+        logoTxVariant = "visa",
+        title = title,
+        subtitle = "Use your Visa card to pay $9.99",
+        payButtonText = "Use $title",
+    )
+    PreselectedPaymentMethodContent(
+        navigator = DropInNavigator(),
+        viewState = viewState,
     )
 }

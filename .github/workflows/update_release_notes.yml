@@ -8,6 +8,9 @@ on:
         description: "Version Name"
         required: true
         type: string
+    secrets:
+      github-token:
+        required: true
 
 permissions:
   contents: write
@@ -52,13 +55,13 @@ jobs:
       # Update Github release with the updated release notes
       - name: Update Github release notes
         id: update_github_release_notes
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20.0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.github-token }}
           VERSION_NAME: ${{ inputs.version-name }}
           BODY_FILE: ${{ needs.fetch_updated_release_notes_file.outputs.updated-release-notes-filepath }}
         with:
-          token: ${{ env.GITHUB_TOKEN }}
+          token: ${{ env.github-token }}
           tag: ${{ env.VERSION_NAME }}
           allowUpdates: true
           updateOnlyUnreleased: true

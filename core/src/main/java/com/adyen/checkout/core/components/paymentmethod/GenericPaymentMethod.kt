@@ -17,7 +17,7 @@ import org.json.JSONObject
 @Parcelize
 data class GenericPaymentMethod(
     override val type: String?,
-    override val checkoutAttemptId: String?,
+    override val sdkData: String? = null,
     val subtype: String?,
 ) : PaymentMethodDetails() {
 
@@ -31,7 +31,7 @@ data class GenericPaymentMethod(
                 return try {
                     JSONObject().apply {
                         putOpt(TYPE, modelObject.type)
-                        putOpt(CHECKOUT_ATTEMPT_ID, modelObject.checkoutAttemptId)
+                        putOpt(SDK_DATA, modelObject.sdkData)
                         putOpt(SUBTYPE, modelObject.subtype)
                     }
                 } catch (e: JSONException) {
@@ -42,7 +42,7 @@ data class GenericPaymentMethod(
             override fun deserialize(jsonObject: JSONObject): GenericPaymentMethod {
                 return GenericPaymentMethod(
                     type = jsonObject.getStringOrNull(TYPE),
-                    checkoutAttemptId = jsonObject.getStringOrNull(CHECKOUT_ATTEMPT_ID),
+                    sdkData = jsonObject.getStringOrNull(SDK_DATA),
                     subtype = jsonObject.getStringOrNull(SUBTYPE),
                 )
             }

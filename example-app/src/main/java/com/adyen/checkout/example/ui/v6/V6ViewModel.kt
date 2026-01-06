@@ -16,15 +16,20 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.adyen.checkout.card.BinLookupData
+import com.adyen.checkout.card.card
+import com.adyen.checkout.card.onBinLookup
+import com.adyen.checkout.card.onBinValue
 import com.adyen.checkout.core.action.data.Action
 import com.adyen.checkout.core.action.data.ActionComponentData
 import com.adyen.checkout.core.common.Environment
+import com.adyen.checkout.core.common.exception.CheckoutError
+import com.adyen.checkout.core.common.exception.ComponentError
 import com.adyen.checkout.core.components.Checkout
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.CheckoutController
 import com.adyen.checkout.core.components.CheckoutResult
-import com.adyen.checkout.core.components.ComponentError
 import com.adyen.checkout.core.components.data.PaymentComponentData
 import com.adyen.checkout.core.components.paymentmethod.PaymentComponentState
 import com.adyen.checkout.example.BuildConfig
@@ -82,7 +87,7 @@ internal class V6ViewModel @Inject constructor(
             return
         }
 
-        val result = Checkout.initialize(
+        val result = Checkout.setup(
             paymentMethodsApiResponse = paymentMethodResponse,
             checkoutConfiguration = configuration,
         )
@@ -95,10 +100,23 @@ internal class V6ViewModel @Inject constructor(
                     onSubmit = ::onSubmit,
                     onAdditionalDetails = ::onAdditionalDetails,
                     onError = ::onError,
-                ),
+                ) {
+                    card {
+                        onBinValue(::onBinValue)
+                        onBinLookup(::onBinLookup)
+                    }
+                },
                 paymentMethods = result.checkoutContext.getPaymentMethods(),
             )
         }
+    }
+
+    private fun onBinValue(binValue: String) {
+        Log.d(TAG, "Bin value received: $binValue")
+    }
+
+    private fun onBinLookup(binLookupData: List<BinLookupData>) {
+        Log.d(TAG, "Bin Lookup Data received: ${binLookupData.joinToString(",") { it.brand }}")
     }
 
     private suspend fun onSubmit(paymentComponentState: PaymentComponentState<*>): CheckoutResult {
@@ -109,7 +127,6 @@ internal class V6ViewModel @Inject constructor(
             amount = keyValueStorage.getAmount(),
             countryCode = keyValueStorage.getCountry(),
             merchantAccount = keyValueStorage.getMerchantAccount(),
-            // TODO - Replace with correct URL once redirects are implemented
             redirectUrl = savedStateHandle.get<String>(V6Activity.RETURN_URL_EXTRA)
                 ?: error("Return url should be set"),
             threeDSMode = keyValueStorage.getThreeDSMode(),
@@ -127,7 +144,7 @@ internal class V6ViewModel @Inject constructor(
 
     private fun handleResponse(json: JSONObject?): CheckoutResult {
         return when {
-            json == null -> CheckoutResult.Error(ComponentError(RuntimeException("Network error")))
+            json == null -> CheckoutResult.Error(ComponentError(message = "Network error"))
             json.has("action") -> {
                 val action = Action.SERIALIZER.deserialize(json.getJSONObject("action"))
                 CheckoutResult.Action(action)
@@ -141,8 +158,8 @@ internal class V6ViewModel @Inject constructor(
         }
     }
 
-    private fun onError(componentError: ComponentError) {
-        uiState = V6UiState.Error(UIText.String(componentError.errorMessage))
+    private fun onError(error: CheckoutError) {
+        uiState = V6UiState.Error(UIText.String(error.message.orEmpty()))
     }
 
     fun handleIntent(intent: Intent) {

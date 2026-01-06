@@ -18,6 +18,7 @@ import com.adyen.checkout.core.common.internal.helper.getLocale
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.CheckoutController
+import com.adyen.checkout.core.components.data.model.PaymentMethodResponse
 import com.adyen.checkout.core.components.internal.BasePaymentComponentState
 import com.adyen.checkout.core.components.internal.PaymentFacilitator
 import com.adyen.checkout.core.components.internal.PaymentFacilitatorFactory
@@ -42,7 +43,7 @@ internal class SessionsPaymentFacilitatorFactory(
 ) : PaymentFacilitatorFactory {
 
     override fun create(
-        txVariant: String,
+        paymentMethod: PaymentMethodResponse,
         coroutineScope: CoroutineScope,
     ): PaymentFacilitator {
         val sessionSavedStateHandleContainer = SessionSavedStateHandleContainer(
@@ -58,7 +59,6 @@ internal class SessionsPaymentFacilitatorFactory(
             publicKey = publicKey,
         )
 
-        // TODO - Analytics. We might need to change the logic on AnalyticsManager creation.
         val analyticsManager = AnalyticsManagerFactory().provide(
             componentParams = componentParamsBundle.commonComponentParams,
             applicationContext = applicationContext,
@@ -68,11 +68,12 @@ internal class SessionsPaymentFacilitatorFactory(
         )
 
         val paymentComponent = PaymentMethodProvider.get(
-            txVariant = txVariant,
+            paymentMethod = paymentMethod,
             coroutineScope = coroutineScope,
             analyticsManager = analyticsManager,
             checkoutConfiguration = checkoutConfiguration,
             componentParamsBundle = componentParamsBundle,
+            checkoutCallbacks = checkoutCallbacks,
         )
 
         val sessionInteractor = SessionInteractor(

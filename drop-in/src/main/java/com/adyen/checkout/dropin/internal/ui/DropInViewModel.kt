@@ -8,32 +8,55 @@
 
 package com.adyen.checkout.dropin.internal.ui
 
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.navigation3.runtime.NavKey
+import com.adyen.checkout.core.common.AdyenLogLevel
 import com.adyen.checkout.core.common.CheckoutContext
+import com.adyen.checkout.core.common.internal.helper.adyenLog
+import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.data.model.PaymentMethodsApiResponse
+import com.adyen.checkout.core.sessions.internal.model.SessionParamsFactory
 import com.adyen.checkout.dropin.internal.DropInResultContract
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.contract
 import kotlin.reflect.KClass
 
 internal class DropInViewModel(
     input: DropInResultContract.Input?,
 ) : ViewModel() {
 
-    val backStack: SnapshotStateList<NavKey> = mutableStateListOf()
+    lateinit var paymentMethods: PaymentMethodsApiResponse
 
-    private lateinit var paymentMethods: PaymentMethodsApiResponse
+    lateinit var dropInParams: DropInParams
+
+    val navigator: DropInNavigator = DropInNavigator()
 
     init {
-        initializeInput(input)
-        initializeBackStack()
+        if (verifyInput(input)) {
+            initializePaymentMethods(input)
+            initializeDropInParams(input)
+            initializeBackStack()
+        }
     }
 
-    private fun initializeInput(input: DropInResultContract.Input?) {
-        val paymentMethods = when (val context = input?.checkoutContext) {
+    @OptIn(ExperimentalContracts::class)
+    private fun verifyInput(input: DropInResultContract.Input?): Boolean {
+        contract {
+            returns(true) implies (input != null)
+        }
+
+        return if (input == null) {
+            // TODO - Return DropInResult.Failed and close drop-in
+            adyenLog(AdyenLogLevel.ERROR) { "Input is null. Closing drop-in with failed result." }
+            false
+        } else {
+            true
+        }
+    }
+
+    private fun initializePaymentMethods(input: DropInResultContract.Input) {
+        val paymentMethods = when (val context = input.checkoutContext) {
             is CheckoutContext.Sessions -> context.checkoutSession.sessionSetupResponse.paymentMethodsApiResponse
             is CheckoutContext.Advanced -> context.paymentMethodsApiResponse
             else -> null
@@ -46,10 +69,36 @@ internal class DropInViewModel(
         this.paymentMethods = paymentMethods
     }
 
+    private fun initializeDropInParams(input: DropInResultContract.Input) {
+        try {
+            val sessionParams = (input.checkoutContext as? CheckoutContext.Sessions?)?.checkoutSession?.let {
+                SessionParamsFactory.create(it)
+            }
+            dropInParams = DropInParamsMapper().map(
+                checkoutConfiguration = input.checkoutContext.getCheckoutConfiguration(),
+                sessionParams = sessionParams,
+            )
+        } catch (e: IllegalStateException) {
+            adyenLog(AdyenLogLevel.ERROR, e) { "Failed to create DropInParams" }
+            // TODO - Return DropInResult.Failed and close drop-in
+        }
+    }
+
     private fun initializeBackStack() {
-        // TODO - Check if there are stored payment methods, if not replace preselected with payment method list
-        val startingEntries = listOf(EmptyNavKey, PreselectedPaymentMethodNavKey)
-        backStack.addAll(startingEntries)
+        val storedPaymentMethods = paymentMethods.storedPaymentMethods
+        val startingPoint = if (storedPaymentMethods.isNullOrEmpty()) {
+            PaymentMethodListNavKey
+        } else {
+            PreselectedPaymentMethodNavKey(storedPaymentMethods.first())
+        }
+        navigator.navigateTo(startingPoint)
+    }
+
+    private fun CheckoutContext.getCheckoutConfiguration(): CheckoutConfiguration {
+        return when (this) {
+            is CheckoutContext.Sessions -> checkoutConfiguration
+            is CheckoutContext.Advanced -> checkoutConfiguration
+        }
     }
 
     class Factory(

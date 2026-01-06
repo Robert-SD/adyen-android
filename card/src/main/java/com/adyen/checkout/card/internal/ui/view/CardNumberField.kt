@@ -8,6 +8,7 @@
 
 package com.adyen.checkout.card.internal.ui.view
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,33 +19,40 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.maxLength
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.adyen.checkout.card.R
+import com.adyen.checkout.card.internal.ui.model.CardNumberTrailingIcon
+import com.adyen.checkout.card.internal.ui.state.CardIntent
 import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.CardType
 import com.adyen.checkout.core.common.helper.CardNumberValidator
 import com.adyen.checkout.core.common.internal.ui.CheckoutNetworkLogo
 import com.adyen.checkout.core.common.localization.CheckoutLocalizationKey
 import com.adyen.checkout.core.common.localization.internal.helper.resolveString
-import com.adyen.checkout.core.components.internal.ui.state.model.TextInputState
-import com.adyen.checkout.ui.internal.CheckoutTextField
-import com.adyen.checkout.ui.internal.DigitOnlyInputTransformation
-import com.adyen.checkout.ui.internal.Dimensions
+import com.adyen.checkout.core.components.internal.ui.state.model.TextInputViewState
+import com.adyen.checkout.ui.internal.element.input.CheckoutTextField
+import com.adyen.checkout.ui.internal.element.input.DigitOnlyInputTransformation
+import com.adyen.checkout.ui.internal.helper.getThemedIcon
+import com.adyen.checkout.ui.internal.theme.CheckoutThemeProvider
+import com.adyen.checkout.ui.internal.theme.Dimensions
 
 @Composable
 internal fun CardNumberField(
-    cardNumberState: TextInputState,
+    cardNumberState: TextInputViewState,
     supportedCardBrands: List<CardBrand>,
     isSupportedCardBrandsShown: Boolean,
     detectedCardBrands: List<CardBrand>,
     isAmex: Boolean?,
-    onCardNumberChanged: (String) -> Unit,
-    onCardNumberFocusChanged: (Boolean) -> Unit,
+    onIntent: (CardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -54,8 +62,7 @@ internal fun CardNumberField(
             cardNumberState = cardNumberState,
             isAmex = isAmex,
             detectedCardBrands = detectedCardBrands,
-            onCardNumberChanged = onCardNumberChanged,
-            onCardNumberFocusChanged = onCardNumberFocusChanged,
+            onIntent = onIntent,
         )
 
         CardBrandsList(
@@ -67,20 +74,13 @@ internal fun CardNumberField(
 
 @Composable
 private fun CardNumberInputField(
-    cardNumberState: TextInputState,
+    cardNumberState: TextInputViewState,
     isAmex: Boolean?,
     detectedCardBrands: List<CardBrand>,
-    onCardNumberChanged: (String) -> Unit,
-    onCardNumberFocusChanged: (Boolean) -> Unit,
+    onIntent: (CardIntent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val showCardNumberError =
-        cardNumberState.errorMessage != null && cardNumberState.showError
-    val supportingTextCardNumber = if (showCardNumberError) {
-        cardNumberState.errorMessage?.let { resolveString(it) }
-    } else {
-        null
-    }
+    val supportingTextCardNumber = cardNumberState.supportingText?.let { resolveString(it) }
 
     val outputTransformation = remember(isAmex) {
         CardNumberOutputTransformation(isAmex = isAmex ?: false)
@@ -90,14 +90,14 @@ private fun CardNumberInputField(
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged { focusState ->
-                onCardNumberFocusChanged(focusState.isFocused)
+                onIntent(CardIntent.UpdateCardNumberFocus(focusState.isFocused))
             },
         label = resolveString(CheckoutLocalizationKey.CARD_NUMBER),
         initialValue = cardNumberState.text,
-        isError = showCardNumberError,
+        isError = cardNumberState.isError,
         supportingText = supportingTextCardNumber,
         onValueChange = { value ->
-            onCardNumberChanged(value)
+            onIntent(CardIntent.UpdateCardNumber(value))
         },
         inputTransformation = DigitOnlyInputTransformation().maxLength(
             maxLength = CardNumberValidator.MAXIMUM_CARD_NUMBER_LENGTH,
@@ -106,7 +106,7 @@ private fun CardNumberInputField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         shouldFocus = cardNumberState.isFocused,
         trailingIcon = {
-            DetectedBrandsList(detectedCardBrands)
+            CardNumberFieldIcon(state = cardNumberState, detectedBrands = detectedCardBrands)
         },
     )
 }
@@ -135,11 +135,17 @@ private fun BrandLogo(
     txVariant: String?,
     modifier: Modifier = Modifier,
 ) {
+    val placeholderResId = getThemedIcon(
+        backgroundColor = CheckoutThemeProvider.elements.textField.backgroundColor,
+        lightDrawableId = R.drawable.ic_card_placeholder_light,
+        darkDrawableId = R.drawable.ic_card_placeholder_dark,
+    )
+
     CheckoutNetworkLogo(
         modifier = modifier.size(Dimensions.LogoSize.small),
         txVariant = txVariant.orEmpty(),
-        placeholder = R.drawable.ic_card_placeholder,
-        errorFallback = R.drawable.ic_card_placeholder,
+        placeholder = placeholderResId,
+        errorFallback = placeholderResId,
     )
 }
 
@@ -165,12 +171,32 @@ private fun CardBrandsList(
     }
 }
 
+@Composable
+private fun CardNumberFieldIcon(
+    state: TextInputViewState,
+    detectedBrands: List<CardBrand>,
+    modifier: Modifier = Modifier,
+) {
+    val trailingIcon = state.trailingIcon as? CardNumberTrailingIcon
+    AnimatedContent(targetState = trailingIcon, modifier = modifier) { trailingIcon ->
+        when (trailingIcon) {
+            CardNumberTrailingIcon.Warning -> Icon(
+                modifier = Modifier.size(Dimensions.LogoSize.smallSquare),
+                imageVector = ImageVector.vectorResource(com.adyen.checkout.test.R.drawable.ic_warning),
+                contentDescription = null,
+                tint = Color.Unspecified,
+            )
+            else -> DetectedBrandsList(detectedBrands)
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun CardNumberFieldPreview() {
     CardNumberField(
-        cardNumberState = TextInputState(
-            "5555444433331111",
+        cardNumberState = TextInputViewState(
+            text = "5555444433331111",
         ),
         supportedCardBrands = listOf(
             CardBrand(CardType.MASTERCARD.txVariant),
@@ -180,7 +206,6 @@ private fun CardNumberFieldPreview() {
         isSupportedCardBrandsShown = true,
         detectedCardBrands = listOf(CardBrand(CardType.MASTERCARD.txVariant)),
         isAmex = false,
-        onCardNumberChanged = {},
-        onCardNumberFocusChanged = {},
+        onIntent = {},
     )
 }

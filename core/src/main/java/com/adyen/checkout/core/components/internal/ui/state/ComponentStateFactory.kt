@@ -11,16 +11,7 @@ package com.adyen.checkout.core.components.internal.ui.state
 import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-interface ComponentStateFactory<C : ComponentState> {
+interface ComponentStateFactory<S : ComponentState> {
 
-    fun createDefaultComponentState(): C
+    fun createInitialState(): S
 }
-
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class DefaultComponentStateFactory : ComponentStateFactory<DefaultComponentState> {
-
-    override fun createDefaultComponentState() = DefaultComponentState()
-}
-
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-class DefaultComponentState : ComponentState
