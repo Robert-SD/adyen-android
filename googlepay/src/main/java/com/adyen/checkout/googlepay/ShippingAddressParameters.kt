@@ -7,11 +7,10 @@
  */
 package com.adyen.checkout.googlepay
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.JsonUtils.parseOptStringList
-import com.adyen.checkout.core.old.internal.data.model.JsonUtils.serializeOptStringList
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.getBooleanOrNull
+import com.adyen.checkout.core.common.internal.model.JsonUtils.parseOptStringList
+import com.adyen.checkout.core.common.internal.model.JsonUtils.serializeOptStringList
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.getBooleanOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -28,8 +27,8 @@ import org.json.JSONObject
 @Suppress("MaxLineLength")
 @Parcelize
 data class ShippingAddressParameters(
-    var allowedCountryCodes: List<String?>? = null,
-    var isPhoneNumberRequired: Boolean = false,
+    val allowedCountryCodes: List<String?>? = null,
+    val isPhoneNumberRequired: Boolean = false,
 ) : ModelObject() {
 
     companion object {
@@ -38,6 +37,7 @@ data class ShippingAddressParameters(
 
         @JvmField
         val SERIALIZER: Serializer<ShippingAddressParameters> = object : Serializer<ShippingAddressParameters> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: ShippingAddressParameters): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -45,7 +45,9 @@ data class ShippingAddressParameters(
                         putOpt(PHONE_NUMBER_REQUIRED, modelObject.isPhoneNumberRequired)
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(ShippingAddressParameters::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(ShippingAddressParameters::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

@@ -9,7 +9,7 @@
 package com.adyen.checkout.example.service
 
 import android.util.Log
-import com.adyen.checkout.blik.BlikComponentState
+import com.adyen.checkout.blik.old.BlikComponentState
 import com.adyen.checkout.card.old.CardComponentState
 import com.adyen.checkout.components.core.ActionComponentData
 import com.adyen.checkout.components.core.PaymentComponentData
@@ -53,7 +53,7 @@ class ExampleSessionsDropInService : SessionDropInService() {
                 val paymentRequest = createPaymentRequest(
                     paymentComponentData = paymentComponentJson,
                     shopperReference = keyValueStorage.getShopperReference(),
-                    amount = keyValueStorage.getAmount(),
+                    amount = keyValueStorage.getOldAmount(),
                     countryCode = keyValueStorage.getCountry(),
                     merchantAccount = keyValueStorage.getMerchantAccount(),
                     redirectUrl = RedirectComponent.getReturnUrl(applicationContext),

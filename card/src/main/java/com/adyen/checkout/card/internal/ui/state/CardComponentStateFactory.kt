@@ -8,8 +8,10 @@
 
 package com.adyen.checkout.card.internal.ui.state
 
+import com.adyen.checkout.card.internal.ui.model.CVCVisibility
 import com.adyen.checkout.card.internal.ui.model.CardComponentParams
 import com.adyen.checkout.core.components.internal.ui.state.ComponentStateFactory
+import com.adyen.checkout.core.components.internal.ui.state.model.RequirementPolicy
 import com.adyen.checkout.core.components.internal.ui.state.model.TextInputComponentState
 
 internal class CardComponentStateFactory(
@@ -20,11 +22,21 @@ internal class CardComponentStateFactory(
         return CardComponentState(
             cardNumber = TextInputComponentState(isFocused = true),
             expiryDate = TextInputComponentState(),
-            securityCode = TextInputComponentState(),
-            holderName = TextInputComponentState(),
-            isHolderNameRequired = componentParams.isHolderNameRequired,
+            securityCode = TextInputComponentState(
+                requirementPolicy = when (componentParams.cvcVisibility) {
+                    CVCVisibility.ALWAYS_SHOW -> RequirementPolicy.Required
+                    CVCVisibility.HIDE_FIRST -> RequirementPolicy.Hidden
+                    CVCVisibility.ALWAYS_HIDE -> RequirementPolicy.Hidden
+                },
+            ),
+            holderName = TextInputComponentState(
+                requirementPolicy = when (componentParams.showHolderName) {
+                    true -> RequirementPolicy.Required
+                    false -> RequirementPolicy.Hidden
+                },
+            ),
             storePaymentMethod = false,
-            isStorePaymentFieldVisible = componentParams.isStorePaymentFieldVisible,
+            isStorePaymentFieldVisible = componentParams.showStorePayment,
             supportedCardBrands = componentParams.supportedCardBrands,
             isLoading = false,
             detectedCardTypes = emptyList(),

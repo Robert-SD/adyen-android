@@ -18,7 +18,7 @@ import com.adyen.checkout.core.common.internal.helper.getLocale
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.CheckoutController
-import com.adyen.checkout.core.components.data.model.PaymentMethodResponse
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethodResponse
 import com.adyen.checkout.core.components.internal.BasePaymentComponentState
 import com.adyen.checkout.core.components.internal.PaymentFacilitator
 import com.adyen.checkout.core.components.internal.PaymentFacilitatorFactory
@@ -40,6 +40,7 @@ internal class SessionsPaymentFacilitatorFactory(
     private val savedStateHandle: SavedStateHandle,
     private val checkoutController: CheckoutController,
     private val publicKey: String?,
+    private val checkoutAttemptId: String?,
 ) : PaymentFacilitatorFactory {
 
     override fun create(
@@ -62,9 +63,9 @@ internal class SessionsPaymentFacilitatorFactory(
         val analyticsManager = AnalyticsManagerFactory().provide(
             componentParams = componentParamsBundle.commonComponentParams,
             applicationContext = applicationContext,
-            // TODO - Analytics. Provide payment method type to source
-            source = AnalyticsSource.PaymentComponent("AwaitAction"),
+            source = AnalyticsSource.PaymentComponent(paymentMethod.type),
             sessionId = checkoutSession.sessionSetupResponse.id,
+            checkoutAttemptId = checkoutAttemptId,
         )
 
         val paymentComponent = PaymentMethodProvider.get(
@@ -85,7 +86,7 @@ internal class SessionsPaymentFacilitatorFactory(
             ),
             sessionSavedStateHandleContainer = sessionSavedStateHandleContainer,
             analyticsManager = analyticsManager,
-            sessionModel = sessionSavedStateHandleContainer.getSessionModel(),
+            sessionResponse = sessionSavedStateHandleContainer.getSessionResponse(),
             isFlowTakenOver = sessionSavedStateHandleContainer.isFlowTakenOver ?: false,
         )
 

@@ -8,41 +8,41 @@ min-sdk = "23"
 version-code = "1"
 
 # Build script
-android-gradle-plugin = "8.10.1"
-kotlin = "2.1.21"
-ksp = "2.1.21-2.0.1"
-dokka = "2.0.0"
-hilt = "2.56.2"
+android-gradle-plugin = "8.13.2"
+kotlin = "2.3.0"
+ksp = "2.3.5"
+dokka = "2.1.0"
+hilt = "2.58"
 
 # Code quality
 detekt = "1.23.8"
 jacoco = "0.8.12"
-ktlint = "1.5.0"
-sonarqube = "7.0.1.6134"
-binary-compatibility-validator = "0.17.0"
+ktlint = "1.8.0"
+sonarqube = "7.2.2.6593"
+binary-compatibility-validator = "0.18.1"
 
 # Android dependencies
-activity = "1.10.1"
+activity = "1.12.4"
 annotation = "1.9.1"
 appcompat = "1.7.1"
 autofill = "1.3.0"
-browser = "1.8.0"
+browser = "1.9.0"
 coroutines = "1.10.2"
 fragment = "1.8.9"
-lifecycle = "2.9.2"
-material = "1.12.0"
-material3 = "1.4.0-alpha18"
-navigation3 = "1.0.0-beta01"
+lifecycle = "2.10.0"
+material = "1.13.0"
+material3 = "1.5.0-alpha13"
+navigation3 = "1.0.0"
 recyclerview = "1.4.0"
 startup = "1.2.0"
 constraintlayout = "2.2.1"
-constraintlayout-compose = "1.0.1"
+constraintlayout-compose = "1.1.1"
 
 # Compose dependencies
-compose-activity = "1.10.1"
-compose-bom = "2025.05.01"
-compose-hilt = "1.2.0"
-compose-viewmodel = "2.9.3"
+compose-activity = "1.12.4"
+compose-bom = "2025.12.01"
+compose-hilt = "1.3.0"
+compose-viewmodel = "2.10.0"
 
 # Adyen dependencies
 adyen3ds2 = "2.2.25"
@@ -50,7 +50,7 @@ adyen3ds2 = "2.2.25"
 # External dependencies
 cash-app-pay = "2.5.0"
 okhttp = "4.12.0"
-play-services-wallet = "19.4.0"
+play-services-wallet = "19.5.0"
 twint = "8.0.0"
 wechat-pay = "6.8.0"
 
@@ -60,27 +60,27 @@ moshi-adapters = "1.15.2"
 moshi-kotlin-adapter = "1.15.2"
 okhttp-logging = "4.12.0"
 preference = "1.2.1"
-retrofit2 = "2.11.0"
+retrofit2 = "2.12.0"
 
 # Tests
 arch-core-testing = "2.2.0"
 barista = "4.3.0"
-espresso = "3.6.1"
+espresso = "3.7.0"
 json = "20250107"
 jose4j = "0.9.6"
-junit-jupiter = "5.12.2"
+junit-jupiter = "5.14.2"
 konsist = "0.17.3"
-lint = "31.10.0"
+lint = "31.13.2"
 mockito-kotlin = "5.4.0"
-mockito = "5.17.0"
-robolectric = "4.14.1"
-test-ext = "1.2.1"
-test-rules = "1.6.1"
+mockito = "5.21.0"
+robolectric = "4.16.1"
+test-ext = "1.3.0"
+test-rules = "1.7.0"
 turbine = "1.2.1"
 uiautomator = "2.3.0"
-core-ktx = "1.15.0"
+core-ktx = "1.17.0"
 junit = "4.13.2"
-junit-version = "1.2.1"
+junit-version = "1.3.0"
 
 [libraries]
 
@@ -96,6 +96,7 @@ androidx-constraintlayout-compose = { group = "androidx.constraintlayout", name 
 androidx-fragment = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragment" }
 androidx-lifecycle-runtime = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "lifecycle" }
+androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycle" }
 androidx-navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
 androidx-navigation3-ui = { group = "androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
 androidx-preference = { group = "androidx.preference", name = "preference-ktx", version.ref = "preference" }
@@ -176,7 +177,7 @@ sonarqube-gradle-plugin = { group = "org.sonarqube", name = "org.sonarqube.gradl
 [bundles]
 
 # Production bundles
-androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-viewmodel-ktx"]
+androidx-lifecycle = ["androidx-lifecycle-runtime", "androidx-lifecycle-viewmodel-ktx", "androidx-lifecycle-service"]
 androidx-navigation3 = ["androidx-navigation3-runtime", "androidx-navigation3-ui"]
 compose-ui = ["compose-ui-main", "compose-ui-graphics", "compose-ui-tooling-preview"]
 kotlin-coroutines = ["kotlin-coroutines-core", "kotlin-coroutines-android"]

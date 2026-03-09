@@ -9,13 +9,12 @@
 package com.adyen.checkout.card.internal.ui.model
 
 import com.adyen.checkout.card.CardConfiguration
-import com.adyen.checkout.card.KCPAuthVisibility
-import com.adyen.checkout.card.SocialSecurityNumberVisibility
+import com.adyen.checkout.card.FieldMode
 import com.adyen.checkout.core.common.AdyenLogLevel
 import com.adyen.checkout.core.common.CardBrand
 import com.adyen.checkout.core.common.CardType
 import com.adyen.checkout.core.common.internal.helper.adyenLog
-import com.adyen.checkout.core.components.data.model.PaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.CardPaymentMethod
 import com.adyen.checkout.core.components.internal.ui.model.ComponentParamsBundle
 import com.adyen.checkout.core.sessions.internal.model.SessionParams
 import kotlin.collections.isNullOrEmpty
@@ -26,24 +25,24 @@ internal class CardComponentParamsMapper {
     fun mapToParams(
         componentParamsBundle: ComponentParamsBundle,
         cardConfiguration: CardConfiguration?,
-        paymentMethod: PaymentMethod?,
+        paymentMethod: CardPaymentMethod?,
     ): CardComponentParams {
         val (commonComponentParams, sessionParams) = componentParamsBundle
         return CardComponentParams(
             commonComponentParams = commonComponentParams,
-            isHolderNameRequired = cardConfiguration?.isHolderNameRequired ?: false,
+            showHolderName = cardConfiguration?.showHolderName ?: false,
             supportedCardBrands = getSupportedCardBrands(cardConfiguration, paymentMethod),
             shopperReference = cardConfiguration?.shopperReference,
-            isStorePaymentFieldVisible = getStorePaymentFieldVisible(sessionParams, cardConfiguration),
-            socialSecurityNumberVisibility = cardConfiguration?.socialSecurityNumberVisibility
-                ?: SocialSecurityNumberVisibility.HIDE,
-            kcpAuthVisibility = cardConfiguration?.kcpAuthVisibility ?: KCPAuthVisibility.HIDE,
-            cvcVisibility = if (cardConfiguration?.isHideCvc == true) {
+            showStorePayment = getStorePaymentFieldVisible(sessionParams, cardConfiguration),
+            socialSecurityNumberMode = cardConfiguration?.socialSecurityNumberMode
+                ?: FieldMode.HIDE,
+            koreanAuthenticationMode = cardConfiguration?.koreanAuthenticationMode ?: FieldMode.HIDE,
+            cvcVisibility = if (cardConfiguration?.hideSecurityCode == true) {
                 CVCVisibility.ALWAYS_HIDE
             } else {
                 CVCVisibility.ALWAYS_SHOW
             },
-            storedCVCVisibility = if (cardConfiguration?.isHideCvcStoredCard == true) {
+            storedCVCVisibility = if (cardConfiguration?.hideStoredSecurityCode == true) {
                 StoredCVCVisibility.HIDE
             } else {
                 StoredCVCVisibility.SHOW
@@ -58,7 +57,7 @@ internal class CardComponentParamsMapper {
      */
     private fun getSupportedCardBrands(
         cardConfiguration: CardConfiguration?,
-        paymentMethod: PaymentMethod?
+        paymentMethod: CardPaymentMethod?
     ): List<CardBrand> {
         val supportedCardBrands = cardConfiguration?.supportedCardBrands
         return when {
@@ -67,9 +66,9 @@ internal class CardComponentParamsMapper {
                 supportedCardBrands
             }
 
-            paymentMethod?.brands.orEmpty().isNotEmpty() -> {
+            paymentMethod?.brands?.isNotEmpty() == true -> {
                 adyenLog(AdyenLogLevel.VERBOSE) { "Reading supportedCardTypes from API brands" }
-                paymentMethod?.brands.orEmpty().map {
+                paymentMethod.brands.map {
                     CardBrand(txVariant = it)
                 }
             }
@@ -89,7 +88,7 @@ internal class CardComponentParamsMapper {
         sessionParams: SessionParams?,
         cardConfiguration: CardConfiguration?,
     ): Boolean {
-        return sessionParams?.enableStoreDetails ?: cardConfiguration?.isStorePaymentFieldVisible ?: true
+        return sessionParams?.enableStoreDetails ?: cardConfiguration?.showStorePayment ?: true
     }
 
     companion object {

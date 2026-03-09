@@ -7,17 +7,16 @@
  */
 package com.adyen.checkout.googlepay.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.getStringOrNull
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.getStringOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
 @Parcelize
 internal data class TokenizationParameters(
-    var gateway: String? = null,
-    var gatewayMerchantId: String? = null,
+    val gateway: String? = null,
+    val gatewayMerchantId: String? = null,
 ) : ModelObject() {
 
     companion object {
@@ -26,6 +25,7 @@ internal data class TokenizationParameters(
 
         @JvmField
         val SERIALIZER: Serializer<TokenizationParameters> = object : Serializer<TokenizationParameters> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: TokenizationParameters): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -33,7 +33,9 @@ internal data class TokenizationParameters(
                         putOpt(GATEWAY_MERCHANT_ID, modelObject.gatewayMerchantId)
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(TokenizationParameters::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(TokenizationParameters::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

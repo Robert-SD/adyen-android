@@ -8,7 +8,6 @@
 
 package com.adyen.checkout.core.components
 
-import com.adyen.checkout.core.common.exception.CheckoutError
 import com.adyen.checkout.core.action.data.Action as ActionResponse
 
 // TODO - KDocs, revisit later after having parameters
@@ -25,5 +24,6 @@ sealed interface CheckoutResult {
     data class Action(val action: ActionResponse) : CheckoutResult
 
     /** Indicates an error occurred during the payment process. */
-    data class Error(val error: CheckoutError) : CheckoutResult
+    // TODO - Error propagation: Revisit error type.
+    data class Error(val errorMessage: String) : CheckoutResult
 }

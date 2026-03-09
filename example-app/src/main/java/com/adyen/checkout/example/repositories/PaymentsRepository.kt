@@ -8,8 +8,8 @@
 
 package com.adyen.checkout.example.repositories
 
-import com.adyen.checkout.core.components.data.model.PaymentMethodsApiResponse
-import com.adyen.checkout.core.sessions.SessionModel
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethodsApiResponse
+import com.adyen.checkout.core.sessions.SessionResponse
 import com.adyen.checkout.example.data.api.CheckoutApiService
 import com.adyen.checkout.example.data.api.model.BalanceRequest
 import com.adyen.checkout.example.data.api.model.CancelOrderRequest
@@ -26,7 +26,7 @@ import com.adyen.checkout.sessions.core.SessionModel as OldSessionModel
 
 interface PaymentsRepository {
     suspend fun createSessionOld(sessionRequest: SessionRequest): OldSessionModel?
-    suspend fun createSession(sessionRequest: SessionRequest): SessionModel?
+    suspend fun createSession(sessionRequest: SessionRequest): SessionResponse?
     suspend fun getPaymentMethodsOld(paymentMethodsRequest: PaymentMethodsRequest): OldPaymentMethodsApiResponse?
     suspend fun getPaymentMethods(paymentMethodsRequest: PaymentMethodsRequest): PaymentMethodsApiResponse?
     suspend fun makePaymentsRequest(paymentsRequest: PaymentsRequest): JSONObject?
@@ -49,10 +49,10 @@ internal class PaymentsRepositoryImpl(private val checkoutApiService: CheckoutAp
     }
 
     // TODO - get rid of old api call and improve this one
-    override suspend fun createSession(sessionRequest: SessionRequest): SessionModel? = safeApiCall {
+    override suspend fun createSession(sessionRequest: SessionRequest): SessionResponse? = safeApiCall {
         checkoutApiService.sessionsAsync(sessionRequest)
     }?.let {
-        SessionModel(it.id, it.sessionData)
+        SessionResponse(it.id, it.sessionData)
     }
 
     override suspend fun getPaymentMethodsOld(
@@ -65,7 +65,7 @@ internal class PaymentsRepositoryImpl(private val checkoutApiService: CheckoutAp
         paymentMethodsRequest: PaymentMethodsRequest
     ): PaymentMethodsApiResponse? = safeApiCall {
         checkoutApiService.paymentMethodsAsync(paymentMethodsRequest)
-    }
+    }?.let { PaymentMethodsApiResponse.SERIALIZER.deserialize(it) }
 
     override suspend fun makePaymentsRequest(paymentsRequest: PaymentsRequest): JSONObject? = safeApiCall {
         checkoutApiService.paymentsAsync(paymentsRequest.combineToJSONObject())

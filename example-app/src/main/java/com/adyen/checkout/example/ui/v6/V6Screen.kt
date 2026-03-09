@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.adyen.checkout.core.components.AdyenPaymentFlow
 import com.adyen.checkout.core.components.CheckoutController
-import com.adyen.checkout.core.components.data.model.PaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethod
 import com.adyen.checkout.example.ui.compose.ResultContent
 import com.adyen.checkout.example.ui.compose.ResultState
 import com.adyen.checkout.example.ui.compose.stringFromUIText
@@ -106,7 +106,7 @@ private fun Component(
         DropDownButton(
             theme = theme,
             onClick = { shouldShowDialog = !shouldShowDialog },
-            text = selectedPaymentMethod.name.orEmpty(),
+            text = selectedPaymentMethod.name,
             isExpanded = shouldShowDialog,
         )
 
@@ -192,10 +192,10 @@ private fun PaymentMethodOptionsDialog(
                             ),
                     ) {
                         @Suppress("RestrictedApi")
-                        (Body(paymentMethod.name.orEmpty()))
+                        (Body(paymentMethod.name))
                         @Suppress("RestrictedApi")
                         SubHeadline(
-                            paymentMethod.type.orEmpty(),
+                            paymentMethod.type,
                             color = Color(theme.colors.textSecondary.value),
                         )
                     }

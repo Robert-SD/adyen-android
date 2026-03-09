@@ -13,18 +13,20 @@ import com.adyen.checkout.core.analytics.internal.TestAnalyticsManager
 import com.adyen.checkout.core.common.Environment
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
-import com.adyen.checkout.core.components.data.model.PaymentMethod
-import com.adyen.checkout.core.components.data.model.StoredPaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.InstantPaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.StoredInstantPaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.StoredPaymentMethod
 import com.adyen.checkout.core.components.internal.ui.PaymentComponent
 import com.adyen.checkout.core.components.internal.ui.TestPaymentComponent
 import com.adyen.checkout.core.components.internal.ui.model.ComponentParamsBundle
 import com.adyen.checkout.core.components.internal.ui.model.generateComponentParamsBundle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotSame
-import org.junit.Assert.assertTrue
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotSame
+import org.junit.jupiter.api.Assertions.assertSame
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -69,7 +71,7 @@ internal class PaymentMethodProviderTest {
         executor.shutdown()
         // Giving it a generous timeout to finish all tasks
         val completed = executor.awaitTermination(5, TimeUnit.SECONDS)
-        assertTrue("Executor tasks did not complete in time.", completed)
+        assertTrue(completed, "Executor tasks did not complete in time.")
         assertEquals(totalRegistrations, PaymentMethodProvider.getFactoriesCount())
     }
 
@@ -91,7 +93,7 @@ internal class PaymentMethodProviderTest {
         executor.shutdown()
         // Giving it a generous timeout to finish all tasks
         val completed = executor.awaitTermination(5, TimeUnit.SECONDS)
-        assertTrue("Executor tasks did not complete in time.", completed)
+        assertTrue(completed, "Executor tasks did not complete in time.")
         assertEquals(totalRegistrations, PaymentMethodProvider.getStoredFactoriesCount())
     }
 
@@ -107,7 +109,7 @@ internal class PaymentMethodProviderTest {
             PaymentMethodProvider.register("txVariant", secondaryFactory)
 
             val actualComponent = PaymentMethodProvider.get(
-                paymentMethod = PaymentMethod(type = "txVariant"),
+                paymentMethod = InstantPaymentMethod(type = "txVariant", name = "name"),
                 coroutineScope = this,
                 analyticsManager = TestAnalyticsManager(),
                 checkoutConfiguration = generateCheckoutConfiguration(),
@@ -131,7 +133,12 @@ internal class PaymentMethodProviderTest {
             PaymentMethodProvider.register("txVariant", secondaryFactory)
 
             val actualComponent = PaymentMethodProvider.get(
-                paymentMethod = StoredPaymentMethod(type = "txVariant"),
+                paymentMethod = StoredInstantPaymentMethod(
+                    type = "txVariant",
+                    name = "name",
+                    id = "test_id",
+                    supportedShopperInteractions = emptyList(),
+                ),
                 coroutineScope = this,
                 analyticsManager = TestAnalyticsManager(),
                 checkoutConfiguration = generateCheckoutConfiguration(),
@@ -165,7 +172,7 @@ internal class PaymentMethodProviderTest {
             PaymentMethodProvider.register("txVariant", factory)
 
             val actualComponent = PaymentMethodProvider.get(
-                paymentMethod = PaymentMethod(type = "txVariant"),
+                paymentMethod = InstantPaymentMethod(type = "txVariant", name = "name"),
                 coroutineScope = this,
                 analyticsManager = TestAnalyticsManager(),
                 checkoutConfiguration = generateCheckoutConfiguration(),
@@ -173,7 +180,7 @@ internal class PaymentMethodProviderTest {
                 checkoutCallbacks = CheckoutCallbacks(),
             )
             assertEquals(1, PaymentMethodProvider.getFactoriesCount())
-            Assert.assertSame(component, actualComponent)
+            assertSame(component, actualComponent)
         }
 
     @Test
@@ -182,7 +189,12 @@ internal class PaymentMethodProviderTest {
             PaymentMethodProvider.register("txVariant", storedFactory)
 
             val actualComponent = PaymentMethodProvider.get(
-                paymentMethod = StoredPaymentMethod(type = "txVariant"),
+                paymentMethod = StoredInstantPaymentMethod(
+                    type = "txVariant",
+                    name = "name",
+                    id = "test_id",
+                    supportedShopperInteractions = emptyList(),
+                ),
                 coroutineScope = this,
                 analyticsManager = TestAnalyticsManager(),
                 checkoutConfiguration = generateCheckoutConfiguration(),
@@ -190,14 +202,14 @@ internal class PaymentMethodProviderTest {
                 checkoutCallbacks = CheckoutCallbacks(),
             )
             assertEquals(1, PaymentMethodProvider.getStoredFactoriesCount())
-            Assert.assertSame(component, actualComponent)
+            assertSame(component, actualComponent)
         }
 
     @Test
     fun `when get is called for an unregistered factory, then an error is thrown`() = runTest {
         assertThrows<IllegalStateException> {
             PaymentMethodProvider.get(
-                paymentMethod = PaymentMethod(type = "unregistered_txVariant"),
+                paymentMethod = InstantPaymentMethod(type = "unregistered_txVariant", name = "name"),
                 coroutineScope = this,
                 analyticsManager = TestAnalyticsManager(),
                 checkoutConfiguration = generateCheckoutConfiguration(),
@@ -211,7 +223,12 @@ internal class PaymentMethodProviderTest {
     fun `when get is called for an unregistered stored factory, then an error is thrown`() = runTest {
         assertThrows<IllegalStateException> {
             PaymentMethodProvider.get(
-                paymentMethod = StoredPaymentMethod(type = "unregistered_txVariant"),
+                paymentMethod = StoredInstantPaymentMethod(
+                    type = "unregistered_txVariant",
+                    name = "name",
+                    id = "test_id",
+                    supportedShopperInteractions = emptyList(),
+                ),
                 coroutineScope = this,
                 analyticsManager = TestAnalyticsManager(),
                 checkoutConfiguration = generateCheckoutConfiguration(),
@@ -264,6 +281,6 @@ internal class PaymentMethodProviderTest {
     private fun generateCheckoutConfiguration() = CheckoutConfiguration(
         shopperLocale = Locale.US,
         environment = Environment.TEST,
-        clientKey = "test_key_12345",
+        clientKey = "test_qwertyuiopasdfgh",
     )
 }

@@ -7,18 +7,17 @@
  */
 package com.adyen.checkout.googlepay.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.deserializeOpt
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.serializeOpt
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.ModelUtils.deserializeOpt
+import com.adyen.checkout.core.common.internal.model.ModelUtils.serializeOpt
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
 @Parcelize
 internal data class PaymentMethodTokenizationSpecification(
-    var type: String? = null,
-    var parameters: TokenizationParameters? = null,
+    val type: String? = null,
+    val parameters: TokenizationParameters? = null,
 ) : ModelObject() {
 
     companion object {
@@ -27,6 +26,7 @@ internal data class PaymentMethodTokenizationSpecification(
 
         @JvmField
         val SERIALIZER: Serializer<PaymentMethodTokenizationSpecification> =
+            @Suppress("TooGenericExceptionThrown")
             object : Serializer<PaymentMethodTokenizationSpecification> {
                 override fun serialize(modelObject: PaymentMethodTokenizationSpecification): JSONObject {
                     return try {
@@ -35,7 +35,9 @@ internal data class PaymentMethodTokenizationSpecification(
                             putOpt(PARAMETERS, serializeOpt(modelObject.parameters, TokenizationParameters.SERIALIZER))
                         }
                     } catch (e: JSONException) {
-                        throw ModelSerializationException(PaymentMethodTokenizationSpecification::class.java, e)
+                        // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                        throw ModelSerializationException(PaymentMethodTokenizationSpecification::class.java, e)
+                        throw RuntimeException(e)
                     }
                 }
 

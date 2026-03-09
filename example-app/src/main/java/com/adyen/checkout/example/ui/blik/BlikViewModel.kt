@@ -11,8 +11,8 @@ package com.adyen.checkout.example.ui.blik
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.adyen.checkout.blik.BlikComponent
-import com.adyen.checkout.blik.BlikComponentState
+import com.adyen.checkout.blik.old.BlikComponent
+import com.adyen.checkout.blik.old.BlikComponentState
 import com.adyen.checkout.components.core.ActionComponentData
 import com.adyen.checkout.components.core.CheckoutCurrency
 import com.adyen.checkout.components.core.ComponentCallback
@@ -56,7 +56,7 @@ class BlikViewModel @Inject constructor(
     }
 
     private suspend fun fetchPaymentMethods(): BlikViewState = withContext(IODispatcher) {
-        if (keyValueStorage.getAmount().currency != CheckoutCurrency.PLN.name) {
+        if (keyValueStorage.getOldAmount().currency != CheckoutCurrency.PLN.name) {
             return@withContext BlikViewState.Error(R.string.currency_code_error, CheckoutCurrency.PLN.name)
         } else if (keyValueStorage.getCountry() != POLAND_COUNTRY_CODE) {
             return@withContext BlikViewState.Error(R.string.country_code_error, POLAND_COUNTRY_CODE)
@@ -66,7 +66,7 @@ class BlikViewModel @Inject constructor(
             getPaymentMethodRequest(
                 merchantAccount = keyValueStorage.getMerchantAccount(),
                 shopperReference = keyValueStorage.getShopperReference(),
-                amount = keyValueStorage.getAmount(),
+                amount = keyValueStorage.getOldAmount(),
                 countryCode = keyValueStorage.getCountry(),
                 shopperLocale = keyValueStorage.getShopperLocale(),
                 splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),
@@ -112,7 +112,7 @@ class BlikViewModel @Inject constructor(
             val paymentRequest = createPaymentRequest(
                 paymentComponentData = paymentComponentData,
                 shopperReference = keyValueStorage.getShopperReference(),
-                amount = keyValueStorage.getAmount(),
+                amount = keyValueStorage.getOldAmount(),
                 countryCode = keyValueStorage.getCountry(),
                 merchantAccount = keyValueStorage.getMerchantAccount(),
                 redirectUrl = savedStateHandle.get<String>(BlikActivity.RETURN_URL_EXTRA)

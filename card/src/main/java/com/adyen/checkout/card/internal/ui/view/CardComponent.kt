@@ -43,7 +43,7 @@ internal fun CardComponent(
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(Dimensions.ExtraLarge),
+            verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.ExtraLarge),
         ) {
             CardDetailsSection(
                 viewState = viewState,
@@ -68,7 +68,7 @@ private fun CardDetailsSection(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(Dimensions.Large),
+        verticalArrangement = Arrangement.spacedBy(Dimensions.Spacing.Large),
     ) {
         CardNumberField(
             cardNumberState = viewState.cardNumber,
@@ -78,16 +78,20 @@ private fun CardDetailsSection(
             isAmex = viewState.isAmex,
             onIntent = onIntent,
         )
-        ExpiryDateField(
-            expiryDateState = viewState.expiryDate,
-            onIntent = onIntent,
-        )
-        SecurityCodeField(
-            securityCodeState = viewState.securityCode,
-            isAmex = viewState.isAmex,
-            onIntent = onIntent,
-        )
-        if (viewState.isHolderNameRequired) {
+        if (viewState.expiryDate != null) {
+            ExpiryDateField(
+                expiryDateState = viewState.expiryDate,
+                onIntent = onIntent,
+            )
+        }
+        if (viewState.securityCode != null) {
+            SecurityCodeField(
+                securityCodeState = viewState.securityCode,
+                isAmex = viewState.isAmex,
+                onIntent = onIntent,
+            )
+        }
+        if (viewState.holderName != null) {
             HolderNameField(
                 holderNameState = viewState.holderName,
                 onIntent = onIntent,
@@ -121,7 +125,6 @@ private fun CardComponentPreview() {
             holderName = TextInputViewState(
                 text = "J. Smith",
             ),
-            isHolderNameRequired = true,
             storePaymentMethod = false,
             isStorePaymentFieldVisible = true,
             supportedCardBrands = emptyList(),

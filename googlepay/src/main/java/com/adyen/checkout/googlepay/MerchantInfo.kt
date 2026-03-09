@@ -7,10 +7,9 @@
  */
 package com.adyen.checkout.googlepay
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils
-import com.adyen.checkout.core.old.internal.data.model.getStringOrNull
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.ModelUtils
+import com.adyen.checkout.core.common.internal.model.getStringOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -25,9 +24,9 @@ import org.json.JSONObject
  */
 @Parcelize
 data class MerchantInfo(
-    var merchantName: String? = null,
-    var merchantId: String? = null,
-    var softwareInfo: SoftwareInfo? = null,
+    val merchantName: String? = null,
+    val merchantId: String? = null,
+    val softwareInfo: SoftwareInfo? = null,
 ) : ModelObject() {
 
     companion object {
@@ -37,6 +36,7 @@ data class MerchantInfo(
 
         @JvmField
         val SERIALIZER: Serializer<MerchantInfo> = object : Serializer<MerchantInfo> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: MerchantInfo): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -48,7 +48,9 @@ data class MerchantInfo(
                         )
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(MerchantInfo::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(MerchantInfo::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

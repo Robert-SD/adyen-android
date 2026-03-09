@@ -14,7 +14,9 @@ import com.adyen.checkout.core.common.helper.runCompileOnly
 import com.adyen.checkout.core.common.ui.model.ExpiryDate
 import com.adyen.checkout.core.components.data.PaymentComponentData
 import com.adyen.checkout.core.components.internal.data.provider.SdkDataProvider
-import com.adyen.checkout.core.components.paymentmethod.CardPaymentMethod
+import com.adyen.checkout.core.components.internal.ui.state.model.RequirementPolicy
+import com.adyen.checkout.core.components.paymentmethod.CardDetails
+import com.adyen.checkout.core.error.internal.ComponentError
 import com.adyen.checkout.cse.EncryptedCard
 import com.adyen.checkout.cse.EncryptionException
 import com.adyen.checkout.cse.UnencryptedCard
@@ -27,7 +29,7 @@ internal fun CardComponentState.toPaymentComponentState(
     cardEncryptor: BaseCardEncryptor,
     sdkDataProvider: SdkDataProvider,
     onEncryptionFailed: (EncryptionException) -> Unit,
-    onPublicKeyNotFound: (RuntimeException) -> Unit,
+    onPublicKeyNotFound: (ComponentError) -> Unit,
 ): CardPaymentComponentState {
     val publicKey = componentParams.publicKey(onPublicKeyNotFound = onPublicKeyNotFound)
         ?: return invalidCardPaymentComponentState()
@@ -38,15 +40,16 @@ internal fun CardComponentState.toPaymentComponentState(
         onEncryptionFailed = onEncryptionFailed,
     ) ?: return invalidCardPaymentComponentState()
 
-    val cardPaymentMethod = createPaymentMethod(
+    val cardDetails = createCardDetails(
         encryptedCard = encryptedCard,
         holderName = holderName(componentParams),
         cardBrand = cardBrand(),
         sdkDataProvider = sdkDataProvider,
+        isCvcHidden = securityCode.requirementPolicy is RequirementPolicy.Hidden,
     )
 
     val paymentComponentData = createPaymentComponentData(
-        cardPaymentMethod = cardPaymentMethod,
+        cardDetails = cardDetails,
         storePaymentMethod = storePaymentMethod(componentParams),
         componentParams = componentParams,
     )
@@ -81,31 +84,31 @@ private fun CardComponentState.encryptCard(
     }
 }
 
-private fun createPaymentMethod(
+private fun createCardDetails(
     encryptedCard: EncryptedCard,
     sdkDataProvider: SdkDataProvider,
     holderName: String?,
     cardBrand: CardBrand?,
-) = CardPaymentMethod(
-    type = CardPaymentMethod.PAYMENT_METHOD_TYPE,
+    isCvcHidden: Boolean,
+) = CardDetails(
+    type = CardDetails.PAYMENT_METHOD_TYPE,
     sdkData = sdkDataProvider.createEncodedSdkData(
         threeDS2SdkVersion = runCompileOnly { ThreeDS2Service.INSTANCE.sdkVersion },
     ),
     encryptedCardNumber = encryptedCard.encryptedCardNumber,
     encryptedExpiryMonth = encryptedCard.encryptedExpiryMonth,
     encryptedExpiryYear = encryptedCard.encryptedExpiryYear,
-    // TODO - Card. Add isCvcHidden check
-    encryptedSecurityCode = encryptedCard.encryptedSecurityCode,
+    encryptedSecurityCode = if (!isCvcHidden) encryptedCard.encryptedSecurityCode else null,
     holderName = holderName,
     brand = cardBrand?.txVariant,
 )
 
 private fun createPaymentComponentData(
-    cardPaymentMethod: CardPaymentMethod,
+    cardDetails: CardDetails,
     storePaymentMethod: Boolean?,
     componentParams: CardComponentParams,
 ) = PaymentComponentData(
-    paymentMethod = cardPaymentMethod,
+    paymentMethod = cardDetails,
     storePaymentMethod = storePaymentMethod,
     shopperReference = componentParams.shopperReference,
     order = null,
@@ -113,7 +116,7 @@ private fun createPaymentComponentData(
 )
 
 private fun createPaymentComponentState(
-    paymentComponentData: PaymentComponentData<CardPaymentMethod>,
+    paymentComponentData: PaymentComponentData<CardDetails>,
 ): CardPaymentComponentState {
     return CardPaymentComponentState(
         data = paymentComponentData,
@@ -136,22 +139,22 @@ private fun CardComponentState.cardBrand(): CardBrand? {
 }
 
 private fun CardComponentState.holderName(componentParams: CardComponentParams) =
-    if (componentParams.isHolderNameRequired && holderName.text.isNotBlank()) {
+    if (componentParams.showHolderName && holderName.text.isNotBlank()) {
         holderName.text
     } else {
         null
     }
 
 private fun CardComponentState.storePaymentMethod(componentParams: CardComponentParams) =
-    if (componentParams.isStorePaymentFieldVisible) {
+    if (componentParams.showStorePayment) {
         storePaymentMethod
     } else {
         null
     }
 
-private fun CardComponentParams.publicKey(onPublicKeyNotFound: (RuntimeException) -> Unit): String? {
+private fun CardComponentParams.publicKey(onPublicKeyNotFound: (ComponentError) -> Unit): String? {
     return publicKey ?: run {
-        onPublicKeyNotFound(RuntimeException("Public key is missing."))
+        onPublicKeyNotFound(ComponentError("Public key is missing."))
         null
     }
 }

@@ -1,19 +1,18 @@
 /*
- * Copyright (c) 2019 Adyen N.V.
+ * Copyright (c) 2026 Adyen N.V.
  *
  * This file is open source and available under the MIT license. See the LICENSE file for more info.
  *
- * Created by caiof on 17/7/2019.
+ * Created by ozgur on 3/2/2026.
  */
 package com.adyen.checkout.googlepay.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.JsonUtils.parseOptStringList
-import com.adyen.checkout.core.old.internal.data.model.JsonUtils.serializeOptStringList
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.deserializeOpt
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.serializeOpt
-import com.adyen.checkout.core.old.internal.data.model.getBooleanOrNull
+import com.adyen.checkout.core.common.internal.model.JsonUtils.parseOptStringList
+import com.adyen.checkout.core.common.internal.model.JsonUtils.serializeOptStringList
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.ModelUtils.deserializeOpt
+import com.adyen.checkout.core.common.internal.model.ModelUtils.serializeOpt
+import com.adyen.checkout.core.common.internal.model.getBooleanOrNull
 import com.adyen.checkout.googlepay.BillingAddressParameters
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
@@ -21,13 +20,13 @@ import org.json.JSONObject
 
 @Parcelize
 internal data class CardParameters(
-    var allowedAuthMethods: List<String?>?,
-    var allowedCardNetworks: List<String?>?,
-    var isAllowPrepaidCards: Boolean,
-    var isAllowCreditCards: Boolean?,
-    var isAssuranceDetailsRequired: Boolean?,
-    var isBillingAddressRequired: Boolean,
-    var billingAddressParameters: BillingAddressParameters?,
+    val allowedAuthMethods: List<String?>?,
+    val allowedCardNetworks: List<String?>?,
+    val isAllowPrepaidCards: Boolean,
+    val isAllowCreditCards: Boolean?,
+    val isAssuranceDetailsRequired: Boolean?,
+    val isBillingAddressRequired: Boolean,
+    val billingAddressParameters: BillingAddressParameters?,
 ) : ModelObject() {
 
     companion object {
@@ -41,6 +40,7 @@ internal data class CardParameters(
 
         @JvmField
         val SERIALIZER: Serializer<CardParameters> = object : Serializer<CardParameters> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: CardParameters): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -56,7 +56,9 @@ internal data class CardParameters(
                         )
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(CardParameters::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(CardParameters::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

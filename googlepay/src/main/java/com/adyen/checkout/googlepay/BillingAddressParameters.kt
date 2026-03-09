@@ -7,10 +7,9 @@
  */
 package com.adyen.checkout.googlepay
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.getBooleanOrNull
-import com.adyen.checkout.core.old.internal.data.model.getStringOrNull
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.getBooleanOrNull
+import com.adyen.checkout.core.common.internal.model.getStringOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
@@ -27,8 +26,8 @@ import org.json.JSONObject
 @Suppress("MaxLineLength")
 @Parcelize
 data class BillingAddressParameters(
-    var format: String? = null,
-    var isPhoneNumberRequired: Boolean = false,
+    val format: String? = null,
+    val isPhoneNumberRequired: Boolean = false,
 ) : ModelObject() {
 
     companion object {
@@ -37,6 +36,7 @@ data class BillingAddressParameters(
 
         @JvmField
         val SERIALIZER: Serializer<BillingAddressParameters> = object : Serializer<BillingAddressParameters> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: BillingAddressParameters): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -44,7 +44,9 @@ data class BillingAddressParameters(
                         putOpt(PHONE_NUMBER_REQUIRED, modelObject.isPhoneNumberRequired)
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(BillingAddressParameters::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(BillingAddressParameters::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

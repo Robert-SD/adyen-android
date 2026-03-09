@@ -23,8 +23,6 @@ import com.adyen.checkout.card.onBinValue
 import com.adyen.checkout.core.action.data.Action
 import com.adyen.checkout.core.action.data.ActionComponentData
 import com.adyen.checkout.core.common.Environment
-import com.adyen.checkout.core.common.exception.CheckoutError
-import com.adyen.checkout.core.common.exception.ComponentError
 import com.adyen.checkout.core.components.Checkout
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
@@ -32,6 +30,7 @@ import com.adyen.checkout.core.components.CheckoutController
 import com.adyen.checkout.core.components.CheckoutResult
 import com.adyen.checkout.core.components.data.PaymentComponentData
 import com.adyen.checkout.core.components.paymentmethod.PaymentComponentState
+import com.adyen.checkout.core.error.CheckoutError
 import com.adyen.checkout.example.BuildConfig
 import com.adyen.checkout.example.data.storage.KeyValueStorage
 import com.adyen.checkout.example.extensions.getLogTag
@@ -73,7 +72,7 @@ internal class V6ViewModel @Inject constructor(
             getPaymentMethodRequest(
                 merchantAccount = keyValueStorage.getMerchantAccount(),
                 shopperReference = keyValueStorage.getShopperReference(),
-                amount = keyValueStorage.getAmount(),
+                amount = keyValueStorage.getOldAmount(),
                 countryCode = keyValueStorage.getCountry(),
                 shopperLocale = keyValueStorage.getShopperLocale(),
                 splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),
@@ -89,11 +88,11 @@ internal class V6ViewModel @Inject constructor(
 
         val result = Checkout.setup(
             paymentMethodsApiResponse = paymentMethodResponse,
-            checkoutConfiguration = configuration,
+            configuration = configuration,
         )
 
         uiState = when (result) {
-            is Checkout.Result.Error -> V6UiState.Error(UIText.String(result.errorReason))
+            is Checkout.Result.Error -> V6UiState.Error(UIText.String(result.error.message.orEmpty()))
             is Checkout.Result.Success -> V6UiState.Component(
                 checkoutContext = result.checkoutContext,
                 checkoutCallbacks = CheckoutCallbacks(
@@ -124,7 +123,7 @@ internal class V6ViewModel @Inject constructor(
         val paymentRequest = createPaymentRequest(
             paymentComponentData = paymentComponentData,
             shopperReference = keyValueStorage.getShopperReference(),
-            amount = keyValueStorage.getAmount(),
+            amount = keyValueStorage.getOldAmount(),
             countryCode = keyValueStorage.getCountry(),
             merchantAccount = keyValueStorage.getMerchantAccount(),
             redirectUrl = savedStateHandle.get<String>(V6Activity.RETURN_URL_EXTRA)
@@ -144,7 +143,7 @@ internal class V6ViewModel @Inject constructor(
 
     private fun handleResponse(json: JSONObject?): CheckoutResult {
         return when {
-            json == null -> CheckoutResult.Error(ComponentError(message = "Network error"))
+            json == null -> CheckoutResult.Error("Network error")
             json.has("action") -> {
                 val action = Action.SERIALIZER.deserialize(json.getJSONObject("action"))
                 CheckoutResult.Action(action)

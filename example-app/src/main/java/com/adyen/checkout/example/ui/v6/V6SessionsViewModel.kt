@@ -17,11 +17,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.adyen.checkout.core.common.Environment
-import com.adyen.checkout.core.common.exception.CheckoutError
 import com.adyen.checkout.core.components.Checkout
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.CheckoutController
+import com.adyen.checkout.core.error.CheckoutError
 import com.adyen.checkout.example.BuildConfig
 import com.adyen.checkout.example.data.storage.KeyValueStorage
 import com.adyen.checkout.example.extensions.getLogTag
@@ -57,11 +57,11 @@ internal class V6SessionsViewModel @Inject constructor(
     }
 
     private suspend fun createSession() {
-        val session = paymentsRepository.createSession(
+        val sessionResponse = paymentsRepository.createSession(
             getSessionRequest(
                 merchantAccount = keyValueStorage.getMerchantAccount(),
                 shopperReference = keyValueStorage.getShopperReference(),
-                amount = keyValueStorage.getAmount(),
+                amount = keyValueStorage.getOldAmount(),
                 countryCode = keyValueStorage.getCountry(),
                 shopperLocale = keyValueStorage.getShopperLocale(),
                 splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),
@@ -76,12 +76,12 @@ internal class V6SessionsViewModel @Inject constructor(
         ) ?: return
 
         val result = Checkout.setup(
-            sessionModel = session,
-            checkoutConfiguration = configuration,
+            sessionResponse = sessionResponse,
+            configuration = configuration,
         )
 
         uiState = when (result) {
-            is Checkout.Result.Error -> V6UiState.Error(UIText.String(result.errorReason))
+            is Checkout.Result.Error -> V6UiState.Error(UIText.String(result.error.message.orEmpty()))
             is Checkout.Result.Success -> V6UiState.Component(
                 checkoutContext = result.checkoutContext,
                 checkoutCallbacks = CheckoutCallbacks(

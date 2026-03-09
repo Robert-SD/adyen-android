@@ -18,9 +18,9 @@ import com.adyen.checkout.bacs.internal.provider.BacsDirectDebitComponentProvide
 import com.adyen.checkout.bcmc.BcmcComponent
 import com.adyen.checkout.bcmc.BcmcComponentState
 import com.adyen.checkout.bcmc.internal.provider.BcmcComponentProvider
-import com.adyen.checkout.blik.BlikComponent
-import com.adyen.checkout.blik.BlikComponentState
-import com.adyen.checkout.blik.internal.provider.BlikComponentProvider
+import com.adyen.checkout.blik.old.BlikComponent
+import com.adyen.checkout.blik.old.BlikComponentState
+import com.adyen.checkout.blik.old.internal.provider.BlikComponentProvider
 import com.adyen.checkout.boleto.BoletoComponent
 import com.adyen.checkout.boleto.BoletoComponentState
 import com.adyen.checkout.boleto.internal.provider.BoletoComponentProvider
@@ -55,9 +55,9 @@ import com.adyen.checkout.eps.internal.provider.EPSComponentProvider
 import com.adyen.checkout.giftcard.GiftCardComponent
 import com.adyen.checkout.giftcard.GiftCardComponentCallback
 import com.adyen.checkout.giftcard.internal.provider.GiftCardComponentProvider
-import com.adyen.checkout.googlepay.GooglePayComponent
-import com.adyen.checkout.googlepay.GooglePayComponentState
-import com.adyen.checkout.googlepay.internal.provider.GooglePayComponentProvider
+import com.adyen.checkout.googlepay.old.GooglePayComponent
+import com.adyen.checkout.googlepay.old.GooglePayComponentState
+import com.adyen.checkout.googlepay.old.internal.provider.GooglePayComponentProvider
 import com.adyen.checkout.ideal.IdealComponent
 import com.adyen.checkout.ideal.IdealComponentState
 import com.adyen.checkout.ideal.internal.provider.IdealComponentProvider

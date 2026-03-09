@@ -11,12 +11,11 @@ package com.adyen.checkout.core.common.localization.internal
 import android.content.Context
 import com.adyen.checkout.core.R
 import com.adyen.checkout.core.common.localization.CheckoutLocalizationKey
-import java.util.Locale
 
 internal class DefaultLocalizationSource {
 
-    @Suppress("CyclomaticComplexMethod", "UnusedParameter")
-    fun getString(context: Context, locale: Locale, key: CheckoutLocalizationKey): String {
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
+    fun getString(context: Context, key: CheckoutLocalizationKey): String {
         val resId = when (key) {
             // Await
             CheckoutLocalizationKey.AWAIT_LOADING -> R.string.checkout_await_loading
@@ -60,6 +59,12 @@ internal class DefaultLocalizationSource {
             CheckoutLocalizationKey.DROP_IN_MANAGE_FAVORITES_OTHERS_SECTION_TITLE ->
                 R.string.checkout_drop_in_manage_favorites_others_section_title
 
+            CheckoutLocalizationKey.DROP_IN_MANAGE_FAVORITES_REMOVE ->
+                R.string.checkout_drop_in_manage_favorites_remove
+
+            CheckoutLocalizationKey.DROP_IN_MANAGE_FAVORITES_REMOVE_CONFIRMATION ->
+                R.string.checkout_drop_in_manage_favorites_remove_confirmation
+
             CheckoutLocalizationKey.DROP_IN_OTHER_PAYMENT_METHODS -> R.string.checkout_drop_in_other_payment_methods
             CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_LIST_DESCRIPTION ->
                 R.string.checkout_drop_in_payment_method_list_description
@@ -76,15 +81,25 @@ internal class DefaultLocalizationSource {
             CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_LIST_PAYMENT_OPTIONS_SECTION_TITLE_WITH_FAVORITES ->
                 R.string.checkout_drop_in_payment_method_list_payment_options_title_with_favorites
 
+            CheckoutLocalizationKey.DROP_IN_PAYMENT_METHOD_CARD_DESCRIPTION ->
+                R.string.checkout_drop_in_payment_method_screen_card_description
             // General
             CheckoutLocalizationKey.GENERAL_BACK -> R.string.checkout_general_back
+            CheckoutLocalizationKey.GENERAL_CANCEL -> R.string.checkout_general_cancel
             CheckoutLocalizationKey.GENERAL_CLOSE -> R.string.checkout_general_close
+            CheckoutLocalizationKey.GENERAL_OPTIONAL -> R.string.checkout_general_optional
             CheckoutLocalizationKey.GENERAL_SEARCH_HINT -> R.string.checkout_general_search_hint
 
             // MBWay
             CheckoutLocalizationKey.MBWAY_PHONE_NUMBER -> R.string.checkout_mbway_phone_number
             CheckoutLocalizationKey.MBWAY_INVALID_PHONE_NUMBER -> R.string.checkout_mbway_invalid_phone_number
             CheckoutLocalizationKey.MBWAY_COUNTRY_CODE -> R.string.checkout_mbway_country_code
+
+            // Blik
+            CheckoutLocalizationKey.BLIK_CODE -> R.string.checkout_blik_code
+            CheckoutLocalizationKey.BLIK_CODE_HINT -> R.string.checkout_blik_code_hint
+            CheckoutLocalizationKey.BLIK_CODE_INVALID -> R.string.checkout_blik_code_not_valid
+            CheckoutLocalizationKey.BLIK_HELPER_TEXT -> R.string.checkout_blik_helper_text
         }
 
         return context.getString(resId)

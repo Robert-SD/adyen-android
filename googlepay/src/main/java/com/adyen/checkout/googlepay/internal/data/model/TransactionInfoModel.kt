@@ -7,22 +7,21 @@
  */
 package com.adyen.checkout.googlepay.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.getStringOrNull
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.getStringOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
 @Parcelize
 internal data class TransactionInfoModel(
-    var currencyCode: String? = null,
-    var countryCode: String? = null,
-    var transactionId: String? = null,
-    var totalPriceStatus: String? = null,
-    var totalPrice: String? = null,
-    var totalPriceLabel: String? = null,
-    var checkoutOption: String? = null,
+    val currencyCode: String? = null,
+    val countryCode: String? = null,
+    val transactionId: String? = null,
+    val totalPriceStatus: String? = null,
+    val totalPrice: String? = null,
+    val totalPriceLabel: String? = null,
+    val checkoutOption: String? = null,
 ) : ModelObject() {
 
     companion object {
@@ -36,6 +35,7 @@ internal data class TransactionInfoModel(
 
         @JvmField
         val SERIALIZER: Serializer<TransactionInfoModel> = object : Serializer<TransactionInfoModel> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: TransactionInfoModel): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -48,7 +48,9 @@ internal data class TransactionInfoModel(
                         putOpt(CHECKOUT_OPTION, modelObject.checkoutOption)
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(TransactionInfoModel::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(TransactionInfoModel::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

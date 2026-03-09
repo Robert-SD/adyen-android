@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -61,6 +62,12 @@ class CardActivity : AppCompatActivity(), AddressLookupCallback {
                 launch { cardViewModel.events.collect(::onCardEvent) }
             }
         }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (cardComponent?.handleBackPress() == true) return@addCallback
+            isEnabled = false
+            onBackPressedDispatcher.onBackPressed()
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -108,7 +115,7 @@ class CardActivity : AppCompatActivity(), AddressLookupCallback {
         val cardComponent = CardComponent.PROVIDER.get(
             activity = this,
             paymentMethod = cardComponentData.paymentMethod,
-            checkoutConfiguration = checkoutConfigurationProvider.checkoutConfig,
+            checkoutConfiguration = checkoutConfigurationProvider.oldCheckoutConfig,
             callback = cardComponentData.callback,
         )
 
@@ -166,11 +173,6 @@ class CardActivity : AppCompatActivity(), AddressLookupCallback {
     override fun onQueryChanged(query: String) {
         Log.d(TAG, "On address lookup query changed: $query")
         cardViewModel.onAddressLookupQueryChanged(query)
-    }
-
-    override fun onBackPressed() {
-        if (cardComponent?.handleBackPress() == true) return
-        super.onBackPressed()
     }
 
     override fun onDestroy() {

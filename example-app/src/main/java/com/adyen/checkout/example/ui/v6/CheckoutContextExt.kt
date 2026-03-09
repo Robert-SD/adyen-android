@@ -9,10 +9,11 @@
 package com.adyen.checkout.example.ui.v6
 
 import com.adyen.checkout.core.common.CheckoutContext
-import com.adyen.checkout.core.components.data.model.PaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethod
 import com.adyen.checkout.core.components.paymentmethod.PaymentMethodTypes
 
 private val SUPPORTED_V6_PAYMENT_METHODS = listOf(
+    PaymentMethodTypes.BLIK,
     PaymentMethodTypes.MB_WAY,
     PaymentMethodTypes.SCHEME,
 )

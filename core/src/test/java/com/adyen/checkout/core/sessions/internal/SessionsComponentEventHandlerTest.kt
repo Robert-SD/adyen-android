@@ -3,7 +3,6 @@ package com.adyen.checkout.core.sessions.internal
 import com.adyen.checkout.core.action.data.ActionComponentData
 import com.adyen.checkout.core.action.data.TestAction
 import com.adyen.checkout.core.action.internal.ActionComponentEvent
-import com.adyen.checkout.core.common.exception.ComponentError
 import com.adyen.checkout.core.components.CheckoutResult
 import com.adyen.checkout.core.components.OnAdditionalDetailsCallback
 import com.adyen.checkout.core.components.OnSubmitCallback
@@ -11,6 +10,8 @@ import com.adyen.checkout.core.components.internal.PaymentComponentEvent
 import com.adyen.checkout.core.components.internal.SessionsComponentCallbacks
 import com.adyen.checkout.core.components.paymentmethod.PaymentComponentState
 import com.adyen.checkout.core.components.paymentmethod.TestPaymentComponentState
+import com.adyen.checkout.core.error.CheckoutError
+import com.adyen.checkout.core.error.internal.ComponentError
 import com.adyen.checkout.core.sessions.SessionPaymentResult
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -60,22 +61,23 @@ internal class SessionsComponentEventHandlerTest(
     }
 
     @Test
-    fun `when event is submit and onSubmit is overridden and returns a result, then that result is returned`() = runTest {
-        val expectedResult = CheckoutResult.Finished()
-        whenever(componentCallbacks.onSubmit) doReturn object : OnSubmitCallback {
-            override suspend fun onSubmit(paymentComponentState: PaymentComponentState<*>): CheckoutResult {
-                return expectedResult
+    fun `when event is submit and onSubmit is overridden and returns a result, then that result is returned`() =
+        runTest {
+            val expectedResult = CheckoutResult.Finished()
+            whenever(componentCallbacks.onSubmit) doReturn object : OnSubmitCallback {
+                override suspend fun onSubmit(paymentComponentState: PaymentComponentState<*>): CheckoutResult {
+                    return expectedResult
+                }
             }
+            whenever(componentCallbacks.onSubmit(any())) doReturn expectedResult
+
+            val state = TestPaymentComponentState()
+            val result = sessionsComponentEventHandler.onPaymentComponentEvent(PaymentComponentEvent.Submit(state))
+
+            assertEquals(expectedResult, result)
+            verify(componentCallbacks).onSubmit(state)
+            verify(sessionInteractor, never()).submitPayment(any())
         }
-        whenever(componentCallbacks.onSubmit(any())) doReturn expectedResult
-
-        val state = TestPaymentComponentState()
-        val result = sessionsComponentEventHandler.onPaymentComponentEvent(PaymentComponentEvent.Submit(state))
-
-        assertEquals(expectedResult, result)
-        verify(componentCallbacks).onSubmit(state)
-        verify(sessionInteractor, never()).submitPayment(any())
-    }
 
     @ParameterizedTest
     @MethodSource("sessionInteractorSubmitSource")
@@ -89,12 +91,18 @@ internal class SessionsComponentEventHandlerTest(
         val state = TestPaymentComponentState()
         val result = sessionsComponentEventHandler.onPaymentComponentEvent(PaymentComponentEvent.Submit(state))
 
-        if (result is CheckoutResult.Error && expectedResult is CheckoutResult.Error) {
-            // We can't compare the error instances directly, so we compare their cause.
-            assertEquals(expectedResult.error.cause, result.error.cause)
-        } else {
-            assertEquals(expectedResult, result)
-        }
+        assertEquals(expectedResult, result)
+    }
+
+    @Test
+    fun `when event is error, then onError is called and error result is returned`() = runTest {
+        val error = ComponentError(message = "test_error")
+        val event = PaymentComponentEvent.Error<TestPaymentComponentState>(error)
+
+        val result = sessionsComponentEventHandler.onPaymentComponentEvent(event)
+
+        verify(componentCallbacks).onError(any<CheckoutError>())
+        assertEquals(CheckoutResult.Error("test_error"), result)
     }
 
     @Test
@@ -132,7 +140,7 @@ internal class SessionsComponentEventHandlerTest(
 
     @ParameterizedTest
     @MethodSource("sessionInteractorDetailsSource")
-    fun `when session interactor submits details, then the correct checkout result is returned`(
+    fun `when onActionComponentEvent is called with details, then the correct checkout result is returned`(
         sessionResult: SessionCallResult.Details,
         expectedResult: CheckoutResult,
     ) = runTest {
@@ -145,24 +153,19 @@ internal class SessionsComponentEventHandlerTest(
         val data = ActionComponentData(paymentData = "test")
         val result = sessionsComponentEventHandler.onActionComponentEvent(ActionComponentEvent.ActionDetails(data))
 
-        if (result is CheckoutResult.Error && expectedResult is CheckoutResult.Error) {
-            // We can't compare the error instances directly, so we compare their cause.
-            assertEquals(expectedResult.error.cause, result.error.cause)
-        } else {
-            assertEquals(expectedResult, result)
-        }
+        assertEquals(expectedResult, result)
     }
 
     @Test
-    fun `when session interactor submit details returns error, then onError is called and error result is returned`() =
+    fun `when onActionComponentEvent is called with error, then onError is called and error result is returned`() =
         runTest {
             val error = ComponentError(message = "test_error")
             val event = ActionComponentEvent.Error(error)
 
             val result = sessionsComponentEventHandler.onActionComponentEvent(event)
 
-            verify(componentCallbacks).onError(error)
-            assertEquals(CheckoutResult.Error(error), result)
+            verify(componentCallbacks).onError(any<CheckoutError>())
+            assertEquals(CheckoutResult.Error("test_error"), result)
         }
 
     companion object {
@@ -175,7 +178,7 @@ internal class SessionsComponentEventHandlerTest(
             arguments(SessionCallResult.Payments.Action(TestAction()), CheckoutResult.Action(TestAction())),
             arguments(
                 SessionCallResult.Payments.Error(throwable),
-                CheckoutResult.Error(ComponentError(message = "test_error", cause = throwable)),
+                CheckoutResult.Error("test_error"),
             ),
             arguments(
                 SessionCallResult.Payments.Finished(SessionPaymentResult(null, null, null, null, null)),
@@ -189,7 +192,7 @@ internal class SessionsComponentEventHandlerTest(
             arguments(SessionCallResult.Details.Action(TestAction()), CheckoutResult.Action(TestAction())),
             arguments(
                 SessionCallResult.Details.Error(throwable),
-                CheckoutResult.Error(ComponentError(message = "test_error", cause = throwable)),
+                CheckoutResult.Error("test_error"),
             ),
             arguments(
                 SessionCallResult.Details.Finished(SessionPaymentResult(null, null, null, null, null)),

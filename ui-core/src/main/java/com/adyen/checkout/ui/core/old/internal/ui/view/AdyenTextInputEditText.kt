@@ -14,7 +14,7 @@ import android.text.InputFilter.LengthFilter
 import android.text.TextWatcher
 import android.util.AttributeSet
 import androidx.annotation.CallSuper
-import com.google.android.material.R
+import androidx.appcompat.R
 import com.google.android.material.textfield.TextInputEditText
 
 open class AdyenTextInputEditText @JvmOverloads constructor(
@@ -28,9 +28,6 @@ open class AdyenTextInputEditText @JvmOverloads constructor(
     open val rawValue: String
         get() = text?.toString() ?: ""
 
-    /**
-     * Constructor of AdyenTextInputEditText.
-     */
     init {
         this.addTextChangedListener(textWatcher)
     }

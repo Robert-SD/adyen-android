@@ -8,31 +8,34 @@
 
 package com.adyen.checkout.core.common.internal.helper
 
-import androidx.annotation.RestrictTo
+import com.adyen.checkout.core.error.CheckoutError
 import java.util.IllformedLocaleException
 import java.util.Locale
 
 /**
  * Utility class to use [Locale].
  */
-@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
-object LocaleUtil {
+internal object LocaleUtil {
 
     /**
-     * Checks if a locale is valid.
+     * Validates a locale and returns an error if invalid.
      *
-     * @param locale The locale.
-     * @return Whether locale is valid or not.
+     * We use [Locale.Builder.setLocale] because the [Locale] constructor does not perform any
+     * validation, allowing invalid locales like `Locale("español")` or `Locale("de", "HANS")`.
+     * The builder throws [IllformedLocaleException] for such cases, giving us reliable validation.
+     *
+     * @param locale The locale to validate.
+     * @return [CheckoutError] if the locale is invalid, `null` otherwise.
      */
-    @JvmStatic
-    fun isValidLocale(locale: Locale): Boolean {
-        @Suppress("SwallowedException")
-        return try {
-            Locale.Builder().setLocale(locale).build()
-            true
-        } catch (ex: IllformedLocaleException) {
-            false
-        }
+    fun validateLocale(locale: Locale): CheckoutError? = try {
+        Locale.Builder().setLocale(locale).build()
+        null
+    } catch (e: IllformedLocaleException) {
+        CheckoutError(
+            code = CheckoutError.ErrorCode.INVALID_LOCALE,
+            message = "Invalid shopper locale: $locale",
+            cause = e,
+        )
     }
 
     /**
@@ -41,7 +44,6 @@ object LocaleUtil {
      * @param tag The tag of the language.
      * @return The locale associated with that tag or null if tag in invalid.
      */
-    @JvmStatic
     fun fromLanguageTag(tag: String): Locale {
         return Locale.forLanguageTag(tag)
     }

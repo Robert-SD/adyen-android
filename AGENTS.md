@@ -311,6 +311,12 @@ if (checkCompileOnly("com.external.sdk.SomeClass")) {
 
 ## Commit Guidelines
 
+### Staging Files for Commit
+**NEVER use `git add -A` or `git add .`**
+- Only stage the specific files that were modified and are necessary for the commit
+- Use `git add <file1> <file2> ...` to add individual files
+- This prevents accidentally committing unrelated changes or generated files that shouldn't be included
+
 ### Commit Message Format
 All commits must follow this format:
 ```
@@ -358,6 +364,15 @@ Before considering work complete:
 
 ## Resources
 [Public Documentation](https://docs.adyen.com/online-payments/build-your-integration/?platform=Android)
+
+## Additional Agent Guides
+
+For specific workflows, refer to these detailed guides in the `.agents/` directory:
+
+- **[Branch Naming](.agents/BRANCH_NAMING.md)** - Branch prefixes, base branches (`main` vs `v5`), branch chaining conventions
+- **[Pull Request Guide](.agents/PULL_REQUEST_GUIDE.md)** - PR creation, templates, release notes format
+- **[GitHub CLI Commands](.agents/GH_CLI_COMMANDS.md)** - `gh` command reference for PR operations
+- **[PR Reviews](.agents/PR_REVIEWS.md)** - Addressing review comments, resolving conversations
 
 ---
 

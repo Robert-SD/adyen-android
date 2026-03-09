@@ -8,7 +8,6 @@
 
 package com.adyen.checkout.example.ui.main
 
-import android.app.Service
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.adyen.checkout.dropin.DropIn
+import com.adyen.checkout.dropin.DropInService
 import com.adyen.checkout.dropin.old.DropInCallback
 import com.adyen.checkout.dropin.old.SessionDropInCallback
 import com.adyen.checkout.example.R
@@ -29,6 +29,7 @@ import com.adyen.checkout.example.extensions.applyInsetsToRootLayout
 import com.adyen.checkout.example.extensions.getLogTag
 import com.adyen.checkout.example.service.ExampleAdvancedDropInService
 import com.adyen.checkout.example.service.ExampleSessionsDropInService
+import com.adyen.checkout.example.service.ExampleV6DropInService
 import com.adyen.checkout.example.ui.bacs.BacsFragment
 import com.adyen.checkout.example.ui.blik.BlikActivity
 import com.adyen.checkout.example.ui.card.CardActivity
@@ -64,9 +65,7 @@ class MainActivity : AppCompatActivity() {
         SessionDropInCallback { sessionDropInResult -> viewModel.onDropInResult(sessionDropInResult) },
     )
 
-    private val dropInLauncher = DropIn.registerForResult(this) { result ->
-        Log.d(TAG, "Drop-in result: $result")
-    }
+    private val dropInLauncher = DropIn.registerForResult(this) { viewModel.onDropInResult(it) }
 
     private var componentItemAdapter: ComponentItemAdapter? = null
 
@@ -184,7 +183,7 @@ class MainActivity : AppCompatActivity() {
                 DropIn.start(
                     launcher = dropInLauncher,
                     dropInContext = navigation.dropInContext,
-                    serviceClass = Service::class.java,
+                    serviceClass = ExampleV6DropInService::class.java,
                 )
             }
 
@@ -192,7 +191,7 @@ class MainActivity : AppCompatActivity() {
                 DropIn.start(
                     launcher = dropInLauncher,
                     dropInContext = navigation.dropInContext,
-                    serviceClass = Service::class.java,
+                    serviceClass = DropInService::class.java,
                 )
             }
 

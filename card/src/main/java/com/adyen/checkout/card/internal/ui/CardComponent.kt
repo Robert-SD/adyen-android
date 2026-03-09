@@ -41,7 +41,9 @@ import com.adyen.checkout.core.components.internal.ui.PaymentComponent
 import com.adyen.checkout.core.components.internal.ui.navigation.CheckoutNavEntry
 import com.adyen.checkout.core.components.internal.ui.state.ComponentStateFlow
 import com.adyen.checkout.core.components.internal.ui.state.viewState
-import com.adyen.checkout.core.components.paymentmethod.CardPaymentMethod
+import com.adyen.checkout.core.components.paymentmethod.CardDetails
+import com.adyen.checkout.core.error.internal.ComponentError
+import com.adyen.checkout.core.error.internal.InternalCheckoutError
 import com.adyen.checkout.cse.EncryptionException
 import com.adyen.checkout.cse.internal.BaseCardEncryptor
 import kotlinx.coroutines.CoroutineScope
@@ -90,8 +92,13 @@ internal class CardComponent(
     override val navigationStartingPoint: NavKey = CardNavKey
 
     init {
+        initializeAnalytics()
         subscribeToDetectedCardTypes()
         subscribeToBinChanges()
+    }
+
+    private fun initializeAnalytics() {
+        analyticsManager.initialize(this, coroutineScope)
     }
 
     fun setOnBinValueCallback(onBinValueCallback: OnBinValueCallback?) {
@@ -122,6 +129,10 @@ internal class CardComponent(
         onIntent(CardIntent.UpdateLoading(isLoading))
     }
 
+    override fun onCleared() {
+        analyticsManager.clear(this)
+    }
+
     private fun onIntent(intent: CardIntent) {
         componentState.handleIntent(intent)
     }
@@ -150,7 +161,7 @@ internal class CardComponent(
             supportedCardBrands = componentParams.supportedCardBrands,
             clientKey = componentParams.clientKey,
             coroutineScope = coroutineScope,
-            type = CardPaymentMethod.PAYMENT_METHOD_TYPE,
+            type = CardDetails.PAYMENT_METHOD_TYPE,
         )
         onIntent(CardIntent.UpdateCardNumber(newCardNumber))
     }
@@ -194,16 +205,24 @@ internal class CardComponent(
         onIntent(CardIntent.UpdateDetectedCardTypes(detectedCardTypes))
     }
 
-    @Suppress("UnusedParameter")
     private fun onEncryptionError(e: EncryptionException) {
-        val event = GenericEvents.error(CardPaymentMethod.PAYMENT_METHOD_TYPE, ErrorEvent.ENCRYPTION)
+        val event = GenericEvents.error(CardDetails.PAYMENT_METHOD_TYPE, ErrorEvent.ENCRYPTION)
         analyticsManager.trackEvent(event)
-        // exceptionChannel.trySend(e)
+
+        // TODO - Error propagation. Change after EncryptionException extends from CheckoutError
+        emitError(ComponentError("Encryption error", e))
     }
 
-    @Suppress("UnusedParameter")
-    private fun onPublicKeyNotFound(e: RuntimeException) {
-        // TODO - Analytics.
-        // exceptionChannel.trySend(e)
+    private fun emitError(error: InternalCheckoutError) {
+        eventChannel.trySend(
+            PaymentComponentEvent.Error(error),
+        )
+    }
+
+    // TODO - Error propagation. Change after implementation of specific error for this case
+    private fun onPublicKeyNotFound(e: ComponentError) {
+        val event = GenericEvents.error(CardDetails.PAYMENT_METHOD_TYPE, ErrorEvent.API_PUBLIC_KEY)
+        analyticsManager.trackEvent(event)
+        emitError(e)
     }
 }

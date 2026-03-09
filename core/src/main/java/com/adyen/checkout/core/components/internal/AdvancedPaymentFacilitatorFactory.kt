@@ -17,10 +17,11 @@ import com.adyen.checkout.core.common.internal.helper.getLocale
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
 import com.adyen.checkout.core.components.CheckoutController
-import com.adyen.checkout.core.components.data.model.PaymentMethodResponse
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethodResponse
 import com.adyen.checkout.core.components.internal.ui.model.CommonComponentParamsMapper
 import kotlinx.coroutines.CoroutineScope
 
+@Suppress("LongParameterList")
 internal class AdvancedPaymentFacilitatorFactory(
     private val applicationContext: Context,
     private val checkoutConfiguration: CheckoutConfiguration,
@@ -28,6 +29,7 @@ internal class AdvancedPaymentFacilitatorFactory(
     private val savedStateHandle: SavedStateHandle,
     private val checkoutController: CheckoutController,
     private val publicKey: String?,
+    private val checkoutAttemptId: String?,
 ) : PaymentFacilitatorFactory {
 
     override fun create(paymentMethod: PaymentMethodResponse, coroutineScope: CoroutineScope): PaymentFacilitator {
@@ -42,9 +44,9 @@ internal class AdvancedPaymentFacilitatorFactory(
         val analyticsManager = AnalyticsManagerFactory().provide(
             componentParams = componentParamsBundle.commonComponentParams,
             applicationContext = applicationContext,
-            // TODO - Analytics. Provide payment method type to source
-            source = AnalyticsSource.PaymentComponent("AwaitAction"),
+            source = AnalyticsSource.PaymentComponent(paymentMethod.type),
             sessionId = null,
+            checkoutAttemptId = checkoutAttemptId,
         )
 
         val paymentComponent = PaymentMethodProvider.get(

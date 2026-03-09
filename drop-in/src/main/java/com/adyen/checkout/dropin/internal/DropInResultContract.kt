@@ -8,7 +8,6 @@
 
 package com.adyen.checkout.dropin.internal
 
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.os.Parcelable
@@ -17,6 +16,7 @@ import com.adyen.checkout.core.common.CheckoutContext
 import com.adyen.checkout.core.old.AdyenLogLevel
 import com.adyen.checkout.core.old.internal.util.adyenLog
 import com.adyen.checkout.dropin.DropInResult
+import com.adyen.checkout.dropin.DropInService
 import com.adyen.checkout.dropin.internal.ui.DropInActivity
 import kotlinx.parcelize.Parcelize
 
@@ -39,7 +39,7 @@ internal class DropInResultContract : ActivityResultContract<DropInResultContrac
     @Parcelize
     internal data class Input(
         val checkoutContext: CheckoutContext,
-        val serviceClass: Class<out Service>,
+        val serviceClass: Class<out DropInService>,
     ) : Parcelable {
 
         companion object {
@@ -59,6 +59,6 @@ internal class DropInResultContract : ActivityResultContract<DropInResultContrac
     companion object {
         private const val EXTRA_INPUT = "com.adyen.checkout.dropin.internal.DropInResultContract.EXTRA_INPUT"
 
-        private const val EXTRA_RESULT = "com.adyen.checkout.dropin.internal.DropInResultContract.EXTRA_RESULT"
+        internal const val EXTRA_RESULT = "com.adyen.checkout.dropin.internal.DropInResultContract.EXTRA_RESULT"
     }
 }

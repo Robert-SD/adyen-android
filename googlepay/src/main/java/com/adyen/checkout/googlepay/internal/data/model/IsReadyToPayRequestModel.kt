@@ -7,22 +7,21 @@
  */
 package com.adyen.checkout.googlepay.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.deserializeOptList
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.serializeOptList
-import com.adyen.checkout.core.old.internal.data.model.getBooleanOrNull
-import com.adyen.checkout.core.old.internal.data.model.getIntOrNull
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.ModelUtils.deserializeOptList
+import com.adyen.checkout.core.common.internal.model.ModelUtils.serializeOptList
+import com.adyen.checkout.core.common.internal.model.getBooleanOrNull
+import com.adyen.checkout.core.common.internal.model.getIntOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
 @Parcelize
 internal data class IsReadyToPayRequestModel(
-    var apiVersion: Int = 0,
-    var apiVersionMinor: Int = 0,
-    var allowedPaymentMethods: List<GooglePayPaymentMethodModel>? = null,
-    var isExistingPaymentMethodRequired: Boolean = false,
+    val apiVersion: Int = 0,
+    val apiVersionMinor: Int = 0,
+    val allowedPaymentMethods: List<GooglePayPaymentMethodModel>? = null,
+    val isExistingPaymentMethodRequired: Boolean = false,
 ) : ModelObject() {
 
     companion object {
@@ -33,6 +32,7 @@ internal data class IsReadyToPayRequestModel(
 
         @JvmField
         val SERIALIZER: Serializer<IsReadyToPayRequestModel> = object : Serializer<IsReadyToPayRequestModel> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: IsReadyToPayRequestModel): JSONObject {
                 return try {
                     JSONObject().apply {
@@ -45,7 +45,9 @@ internal data class IsReadyToPayRequestModel(
                         putOpt(EXISTING_PAYMENT_METHOD_REQUIRED, modelObject.isExistingPaymentMethodRequired)
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(IsReadyToPayRequestModel::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(IsReadyToPayRequestModel::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 

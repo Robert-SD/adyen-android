@@ -11,9 +11,10 @@ package com.adyen.checkout.dropin.internal.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
-import com.adyen.checkout.core.components.data.model.StoredPaymentMethod
 import com.adyen.checkout.core.components.data.model.format
-import com.adyen.checkout.core.components.paymentmethod.PaymentMethodTypes
+import com.adyen.checkout.core.components.data.model.paymentmethod.StoredPaymentMethod
+import com.adyen.checkout.dropin.internal.data.PaymentMethodRepository
+import com.adyen.checkout.dropin.internal.helper.StoredPaymentMethodFormatter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,46 +22,68 @@ import kotlin.reflect.KClass
 
 internal class PreselectedPaymentMethodViewModel(
     private val dropInParams: DropInParams,
-    private val storedPaymentMethod: StoredPaymentMethod,
+    private val paymentMethodRepository: PaymentMethodRepository,
+    private val storedPaymentMethodId: String,
+    private val navigator: DropInNavigator,
 ) : ViewModel() {
 
-    private val _viewState = MutableStateFlow(createInitialViewState())
-    val viewState: StateFlow<PreselectedPaymentMethodViewState> = _viewState.asStateFlow()
+    private val _viewState = MutableStateFlow<PreselectedPaymentMethodViewState?>(null)
+    val viewState: StateFlow<PreselectedPaymentMethodViewState?> = _viewState.asStateFlow()
 
-    private fun createInitialViewState(): PreselectedPaymentMethodViewState {
-        val logoTxVariant = if (storedPaymentMethod.type == PaymentMethodTypes.SCHEME) {
-            storedPaymentMethod.brand.orEmpty()
+    init {
+        val storedPaymentMethod = paymentMethodRepository.storedPaymentMethods.value
+            .firstOrNull { it.id == storedPaymentMethodId }
+
+        if (storedPaymentMethod == null) {
+            clearAndNavigateToPaymentMethodList()
         } else {
-            storedPaymentMethod.type.orEmpty()
+            _viewState.value = createInitialViewState(storedPaymentMethod)
         }
+    }
 
-        val title = if (storedPaymentMethod.lastFour != null) {
-            "${storedPaymentMethod.name} •••• ${storedPaymentMethod.lastFour}"
-        } else {
-            storedPaymentMethod.name.orEmpty()
-        }
-
+    private fun createInitialViewState(storedPaymentMethod: StoredPaymentMethod): PreselectedPaymentMethodViewState {
         val formattedAmount = dropInParams.amount.format(dropInParams.shopperLocale)
 
         return PreselectedPaymentMethodViewState(
-            logoTxVariant = logoTxVariant,
-            title = title,
+            logoTxVariant = StoredPaymentMethodFormatter.getIcon(storedPaymentMethod),
+            title = StoredPaymentMethodFormatter.getTitle(storedPaymentMethod),
             // TODO - Move to string resources after we support arguments
-            subtitle = "Use your ${storedPaymentMethod.name} to pay $formattedAmount",
-            payButtonText = "Use $title",
+            subtitle = "Use ${storedPaymentMethod.name} to pay $formattedAmount",
+            payButtonText = "Pay $formattedAmount",
         )
+    }
+
+    fun onBackClicked() {
+        navigator.back()
+    }
+
+    fun onPayClicked() {
+        val type = DropInPaymentFlowType.StoredPaymentMethod(storedPaymentMethodId)
+        navigator.clearAndNavigateTo(PaymentMethodNavKey(type))
+    }
+
+    fun onOtherPaymentMethodClicked() {
+        clearAndNavigateToPaymentMethodList()
+    }
+
+    private fun clearAndNavigateToPaymentMethodList() {
+        navigator.clearAndNavigateTo(PaymentMethodListNavKey)
     }
 
     class Factory(
         private val dropInParams: DropInParams,
-        private val storedPaymentMethod: StoredPaymentMethod,
+        private val storedPaymentMethodId: String,
+        private val paymentMethodRepository: PaymentMethodRepository,
+        private val navigator: DropInNavigator,
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
             return PreselectedPaymentMethodViewModel(
                 dropInParams = dropInParams,
-                storedPaymentMethod = storedPaymentMethod,
+                paymentMethodRepository = paymentMethodRepository,
+                storedPaymentMethodId = storedPaymentMethodId,
+                navigator = navigator,
             ) as T
         }
     }

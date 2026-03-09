@@ -7,20 +7,19 @@
  */
 package com.adyen.checkout.googlepay.internal.data.model
 
-import com.adyen.checkout.core.old.exception.ModelSerializationException
-import com.adyen.checkout.core.old.internal.data.model.ModelObject
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.deserializeOpt
-import com.adyen.checkout.core.old.internal.data.model.ModelUtils.serializeOpt
-import com.adyen.checkout.core.old.internal.data.model.getStringOrNull
+import com.adyen.checkout.core.common.internal.model.ModelObject
+import com.adyen.checkout.core.common.internal.model.ModelUtils
+import com.adyen.checkout.core.common.internal.model.ModelUtils.deserializeOpt
+import com.adyen.checkout.core.common.internal.model.getStringOrNull
 import kotlinx.parcelize.Parcelize
 import org.json.JSONException
 import org.json.JSONObject
 
 @Parcelize
 internal data class GooglePayPaymentMethodModel(
-    var type: String? = null,
-    var parameters: CardParameters? = null,
-    var tokenizationSpecification: PaymentMethodTokenizationSpecification? = null,
+    val type: String? = null,
+    val parameters: CardParameters? = null,
+    val tokenizationSpecification: PaymentMethodTokenizationSpecification? = null,
 ) : ModelObject() {
 
     companion object {
@@ -30,34 +29,38 @@ internal data class GooglePayPaymentMethodModel(
 
         @JvmField
         val SERIALIZER: Serializer<GooglePayPaymentMethodModel> = object : Serializer<GooglePayPaymentMethodModel> {
+            @Suppress("TooGenericExceptionThrown")
             override fun serialize(modelObject: GooglePayPaymentMethodModel): JSONObject {
                 return try {
                     JSONObject().apply {
                         putOpt(TYPE, modelObject.type)
-                        putOpt(PARAMETERS, serializeOpt(modelObject.parameters, CardParameters.SERIALIZER))
+                        putOpt(PARAMETERS, ModelUtils.serializeOpt(modelObject.parameters, CardParameters.SERIALIZER))
                         putOpt(
                             TOKENIZATION_SPECIFICATION,
-                            serializeOpt(
+                            ModelUtils.serializeOpt(
                                 modelObject.tokenizationSpecification,
-                                PaymentMethodTokenizationSpecification.SERIALIZER
-                            )
+                                PaymentMethodTokenizationSpecification.SERIALIZER,
+                            ),
                         )
                     }
                 } catch (e: JSONException) {
-                    throw ModelSerializationException(GooglePayPaymentMethodModel::class.java, e)
+                    // TODO - Change RuntimeException into a clearer error. Also remove the suppresion.
+//                    throw ModelSerializationException(GooglePayPaymentMethodModel::class.java, e)
+                    throw RuntimeException(e)
                 }
             }
 
             override fun deserialize(jsonObject: JSONObject): GooglePayPaymentMethodModel {
-                val googlePayPaymentMethodModel = GooglePayPaymentMethodModel()
-                googlePayPaymentMethodModel.type = jsonObject.getStringOrNull(TYPE)
-                googlePayPaymentMethodModel.parameters = deserializeOpt(
-                    jsonObject.optJSONObject(PARAMETERS),
-                    CardParameters.SERIALIZER
-                )
-                googlePayPaymentMethodModel.tokenizationSpecification = deserializeOpt(
-                    jsonObject.optJSONObject(TOKENIZATION_SPECIFICATION),
-                    PaymentMethodTokenizationSpecification.SERIALIZER
+                val googlePayPaymentMethodModel = GooglePayPaymentMethodModel(
+                    type = jsonObject.getStringOrNull(TYPE),
+                    parameters = deserializeOpt(
+                        jsonObject.optJSONObject(PARAMETERS),
+                        CardParameters.SERIALIZER,
+                    ),
+                    tokenizationSpecification = deserializeOpt(
+                        jsonObject.optJSONObject(TOKENIZATION_SPECIFICATION),
+                        PaymentMethodTokenizationSpecification.SERIALIZER,
+                    ),
                 )
                 return googlePayPaymentMethodModel
             }

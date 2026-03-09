@@ -12,13 +12,9 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.adyen.checkout.core.common.Environment
 import com.adyen.checkout.core.components.Checkout
-import com.adyen.checkout.core.components.CheckoutConfiguration
-import com.adyen.checkout.core.components.data.model.Amount
-import com.adyen.checkout.dropin.old.DropInResult
+import com.adyen.checkout.dropin.DropInResult
 import com.adyen.checkout.dropin.old.SessionDropInResult
-import com.adyen.checkout.example.BuildConfig
 import com.adyen.checkout.example.data.storage.IntegrationFlow
 import com.adyen.checkout.example.data.storage.KeyValueStorage
 import com.adyen.checkout.example.extensions.getLogTag
@@ -39,6 +35,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.adyen.checkout.components.core.CheckoutConfiguration as OldCheckoutConfiguration
+import com.adyen.checkout.dropin.old.DropInResult as OldDropInResult
 
 @Suppress("TooManyFunctions")
 @HiltViewModel
@@ -147,7 +144,7 @@ internal class MainViewModel @Inject constructor(
             showLoading(false)
 
             if (paymentMethods != null) {
-                val checkoutConfiguration = checkoutConfigurationProvider.checkoutConfig
+                val checkoutConfiguration = checkoutConfigurationProvider.oldCheckoutConfig
                 _eventFlow.tryEmit(MainEvent.NavigateTo(MainNavigation.DropIn(paymentMethods, checkoutConfiguration)))
             } else {
                 onError("Something went wrong while fetching payment methods")
@@ -159,7 +156,7 @@ internal class MainViewModel @Inject constructor(
         viewModelScope.launch {
             showLoading(true)
 
-            val checkoutConfiguration = checkoutConfigurationProvider.checkoutConfig
+            val checkoutConfiguration = checkoutConfigurationProvider.oldCheckoutConfig
 
             val session = getSessionOld(checkoutConfiguration)
 
@@ -184,18 +181,12 @@ internal class MainViewModel @Inject constructor(
 
             val paymentMethods = paymentsRepository.getPaymentMethods(createPaymentMethodRequest())
 
-            // TODO - Get config from provider
-            @Suppress("MagicNumber")
-            val checkoutConfiguration = CheckoutConfiguration(
-                environment = Environment.TEST,
-                clientKey = BuildConfig.CLIENT_KEY,
-                amount = Amount("USD", 1337),
-            )
+            val configuration = checkoutConfigurationProvider.checkoutConfig
 
             val result = paymentMethods?.let {
                 Checkout.setup(
-                    paymentMethods,
-                    checkoutConfiguration,
+                    paymentMethodsApiResponse = paymentMethods,
+                    configuration = configuration,
                 )
             }
 
@@ -213,20 +204,14 @@ internal class MainViewModel @Inject constructor(
         viewModelScope.launch {
             showLoading(true)
 
-            // TODO - Get config from provider
-            @Suppress("MagicNumber")
-            val checkoutConfiguration = CheckoutConfiguration(
-                environment = Environment.TEST,
-                clientKey = BuildConfig.CLIENT_KEY,
-                amount = Amount("USD", 1337),
-            )
+            val configuration = checkoutConfigurationProvider.checkoutConfig
 
-            val sessionModel = paymentsRepository.createSession(createSessionRequest())
+            val sessionResponse = paymentsRepository.createSession(createSessionRequest())
 
-            val result = sessionModel?.let {
+            val result = sessionResponse?.let {
                 Checkout.setup(
-                    sessionModel,
-                    checkoutConfiguration,
+                    sessionResponse = sessionResponse,
+                    configuration = configuration,
                 )
             }
 
@@ -244,7 +229,7 @@ internal class MainViewModel @Inject constructor(
     private fun createPaymentMethodRequest() = getPaymentMethodRequest(
         merchantAccount = keyValueStorage.getMerchantAccount(),
         shopperReference = keyValueStorage.getShopperReference(),
-        amount = keyValueStorage.getAmount(),
+        amount = keyValueStorage.getOldAmount(),
         countryCode = keyValueStorage.getCountry(),
         shopperLocale = keyValueStorage.getShopperLocale(),
         splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),
@@ -253,7 +238,7 @@ internal class MainViewModel @Inject constructor(
     private fun createSessionRequest() = getSessionRequest(
         merchantAccount = keyValueStorage.getMerchantAccount(),
         shopperReference = keyValueStorage.getShopperReference(),
-        amount = keyValueStorage.getAmount(),
+        amount = keyValueStorage.getOldAmount(),
         countryCode = keyValueStorage.getCountry(),
         shopperLocale = keyValueStorage.getShopperLocale(),
         splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),
@@ -336,10 +321,21 @@ internal class MainViewModel @Inject constructor(
     }
 
     fun onDropInResult(dropInResult: DropInResult?) {
+        Log.d(TAG, "Drop-in result: $dropInResult")
         val message = when (dropInResult) {
-            is DropInResult.CancelledByUser -> "Canceled by user"
-            is DropInResult.Error -> dropInResult.reason ?: "DropInResult is error without reason"
-            is DropInResult.Finished -> dropInResult.result
+            is DropInResult.Cancelled -> "Canceled by user"
+            is DropInResult.Failed -> dropInResult.error
+            is DropInResult.Completed -> dropInResult.result.resultCode
+            null -> "DropInResult is null"
+        }
+        _eventFlow.tryEmit(MainEvent.Toast(message))
+    }
+
+    fun onDropInResult(dropInResult: OldDropInResult?) {
+        val message = when (dropInResult) {
+            is OldDropInResult.CancelledByUser -> "Canceled by user"
+            is OldDropInResult.Error -> dropInResult.reason ?: "DropInResult is error without reason"
+            is OldDropInResult.Finished -> dropInResult.result
             null -> "DropInResult is null"
         }
         _eventFlow.tryEmit(MainEvent.Toast(message))

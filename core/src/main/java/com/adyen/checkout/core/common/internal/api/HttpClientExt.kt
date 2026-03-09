@@ -10,11 +10,11 @@ package com.adyen.checkout.core.common.internal.api
 
 import androidx.annotation.RestrictTo
 import com.adyen.checkout.core.common.AdyenLogLevel
-import com.adyen.checkout.core.common.exception.HttpException
 import com.adyen.checkout.core.common.internal.helper.adyenLog
 import com.adyen.checkout.core.common.internal.model.ErrorResponseBody
 import com.adyen.checkout.core.common.internal.model.ModelObject
 import com.adyen.checkout.core.common.internal.model.toStringPretty
+import com.adyen.checkout.core.error.internal.HttpError
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -58,13 +58,13 @@ suspend fun <T : ModelObject, R : ModelObject> HttpClient.post(
 private inline fun <T : Any, R> T.runAndLogHttpException(block: T.() -> R): R {
     return try {
         block()
-    } catch (httpException: HttpException) {
-        adyenLog(AdyenLogLevel.ERROR) { "API error - ${httpException.getLogMessage()}" }
-        throw httpException
+    } catch (httpError: HttpError) {
+        adyenLog(AdyenLogLevel.ERROR) { "API error - ${httpError.getLogMessage()}" }
+        throw httpError
     }
 }
 
-private fun HttpException.getLogMessage(): String {
+private fun HttpError.getLogMessage(): String {
     return if (errorBody != null) {
         ErrorResponseBody.SERIALIZER.serialize(errorBody).toStringPretty()
     } else {

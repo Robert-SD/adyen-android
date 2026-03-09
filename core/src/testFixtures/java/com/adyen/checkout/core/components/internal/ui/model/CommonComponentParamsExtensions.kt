@@ -21,13 +21,10 @@ fun generateComponentParamsBundle(
     shopperLocale: Locale = Locale("nl", "NL"),
     environment: Environment = Environment.TEST,
     clientKey: String = "test_qwertyuiopasdfghjklzxcvbnmqwerty",
-    analyticsParams: AnalyticsParams = AnalyticsParams(
-        AnalyticsParamsLevel.ALL,
-        "test_qwertyuiopasdfghjklzxcvbnmqwerty",
-    ),
+    analyticsParams: AnalyticsParams = AnalyticsParams(AnalyticsParamsLevel.ALL),
     isCreatedByDropIn: Boolean = false,
     amount: Amount? = null,
-    isSubmitButtonVisible: Boolean = true,
+    showSubmitButton: Boolean = true,
 ) = ComponentParamsBundle(
     commonComponentParams = generateCommonComponentParams(
         shopperLocale = shopperLocale,
@@ -36,7 +33,7 @@ fun generateComponentParamsBundle(
         analyticsParams = analyticsParams,
         isCreatedByDropIn = isCreatedByDropIn,
         amount = amount,
-        isSubmitButtonVisible = isSubmitButtonVisible,
+        showSubmitButton = showSubmitButton,
     ),
     sessionParams = null,
 )
@@ -47,13 +44,10 @@ fun generateCommonComponentParams(
     shopperLocale: Locale = Locale("nl", "NL"),
     environment: Environment = Environment.TEST,
     clientKey: String = "test_qwertyuiopasdfghjklzxcvbnmqwerty",
-    analyticsParams: AnalyticsParams = AnalyticsParams(
-        AnalyticsParamsLevel.ALL,
-        "test_qwertyuiopasdfghjklzxcvbnmqwerty",
-    ),
+    analyticsParams: AnalyticsParams = AnalyticsParams(AnalyticsParamsLevel.ALL),
     isCreatedByDropIn: Boolean = false,
     amount: Amount? = null,
-    isSubmitButtonVisible: Boolean = true,
+    showSubmitButton: Boolean = true,
     publicKey: String = TEST_PUBLIC_KEY
 ) = CommonComponentParams(
     shopperLocale = shopperLocale,
@@ -62,7 +56,7 @@ fun generateCommonComponentParams(
     analyticsParams = analyticsParams,
     isCreatedByDropIn = isCreatedByDropIn,
     amount = amount,
-    isSubmitButtonVisible = isSubmitButtonVisible,
+    showSubmitButton = showSubmitButton,
     publicKey = publicKey,
 )
 

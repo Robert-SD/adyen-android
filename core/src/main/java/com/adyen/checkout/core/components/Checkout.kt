@@ -9,30 +9,40 @@
 package com.adyen.checkout.core.components
 
 import com.adyen.checkout.core.common.CheckoutContext
-import com.adyen.checkout.core.components.data.model.PaymentMethodsApiResponse
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethodsApiResponse
 import com.adyen.checkout.core.components.internal.CheckoutInitializer
-import com.adyen.checkout.core.sessions.SessionModel
+import com.adyen.checkout.core.components.internal.validate
+import com.adyen.checkout.core.error.CheckoutError
+import com.adyen.checkout.core.sessions.SessionResponse
 
 object Checkout {
 
     suspend fun setup(
-        sessionModel: SessionModel,
-        checkoutConfiguration: CheckoutConfiguration,
+        sessionResponse: SessionResponse,
+        configuration: CheckoutConfiguration,
     ): Result<CheckoutContext.Sessions> {
+        configuration.validate()?.let { error ->
+            return Result.Error(error)
+        }
+
         val initializationData = CheckoutInitializer.initialize(
-            checkoutConfiguration = checkoutConfiguration,
-            sessionModel = sessionModel,
+            checkoutConfiguration = configuration,
+            sessionResponse = sessionResponse,
         )
 
         return when {
-            initializationData.checkoutSession == null -> {
-                Result.Error("Failed to initialize sessions.")
-            }
+            initializationData.checkoutSession == null -> Result.Error(
+                CheckoutError(
+                    code = CheckoutError.ErrorCode.SESSION_SETUP_FAILURE,
+                    message = "Failed to initialize sessions.",
+                ),
+            )
 
             else -> Result.Success(
                 checkoutContext = CheckoutContext.Sessions(
                     checkoutSession = initializationData.checkoutSession,
-                    checkoutConfiguration = checkoutConfiguration,
+                    checkoutConfiguration = configuration,
+                    checkoutAttemptId = initializationData.checkoutAttemptId,
                     publicKey = initializationData.publicKey,
                 ),
             )
@@ -41,17 +51,22 @@ object Checkout {
 
     suspend fun setup(
         paymentMethodsApiResponse: PaymentMethodsApiResponse,
-        checkoutConfiguration: CheckoutConfiguration,
+        configuration: CheckoutConfiguration,
     ): Result<CheckoutContext.Advanced> {
+        configuration.validate()?.let { error ->
+            return Result.Error(error)
+        }
+
         val initializationData = CheckoutInitializer.initialize(
-            checkoutConfiguration = checkoutConfiguration,
-            sessionModel = null,
+            checkoutConfiguration = configuration,
+            sessionResponse = null,
         )
 
         return Result.Success(
             CheckoutContext.Advanced(
                 paymentMethodsApiResponse = paymentMethodsApiResponse,
-                checkoutConfiguration = checkoutConfiguration,
+                checkoutConfiguration = configuration,
+                checkoutAttemptId = initializationData.checkoutAttemptId,
                 publicKey = initializationData.publicKey,
             ),
         )
@@ -59,6 +74,6 @@ object Checkout {
 
     sealed interface Result<T : CheckoutContext> {
         data class Success<T : CheckoutContext>(val checkoutContext: T) : Result<T>
-        data class Error<T : CheckoutContext>(val errorReason: String) : Result<T>
+        data class Error<T : CheckoutContext>(val error: CheckoutError) : Result<T>
     }
 }

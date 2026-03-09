@@ -17,7 +17,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.adyen.checkout.blik.BlikComponent
+import com.adyen.checkout.blik.old.BlikComponent
 import com.adyen.checkout.example.databinding.ActivityBlikBinding
 import com.adyen.checkout.example.extensions.applyInsetsToRootLayout
 import com.adyen.checkout.example.ui.configuration.CheckoutConfigurationProvider
@@ -97,7 +97,7 @@ class BlikActivity : AppCompatActivity() {
         val blikComponent = BlikComponent.PROVIDER.get(
             activity = this,
             paymentMethod = componentData.paymentMethod,
-            checkoutConfiguration = checkoutConfigurationProvider.checkoutConfig,
+            checkoutConfiguration = checkoutConfigurationProvider.oldCheckoutConfig,
             callback = componentData.callback
         )
 

@@ -13,7 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import com.adyen.checkout.core.common.CheckoutContext
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutController
-import com.adyen.checkout.core.components.data.model.PaymentMethodResponse
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethodResponse
 import com.adyen.checkout.core.sessions.internal.SessionsPaymentFacilitatorFactory
 import kotlinx.coroutines.CoroutineScope
 
@@ -38,6 +38,7 @@ internal class PaymentFacilitatorProvider {
                     savedStateHandle = savedStateHandle,
                     checkoutController = checkoutController,
                     publicKey = checkoutContext.publicKey,
+                    checkoutAttemptId = checkoutContext.checkoutAttemptId,
                 )
             }
 
@@ -50,6 +51,7 @@ internal class PaymentFacilitatorProvider {
                     savedStateHandle = savedStateHandle,
                     checkoutController = checkoutController,
                     publicKey = checkoutContext.publicKey,
+                    checkoutAttemptId = checkoutContext.checkoutAttemptId,
                 )
             }
         }

@@ -26,8 +26,8 @@ import com.adyen.checkout.example.service.getSessionRequest
 import com.adyen.checkout.example.service.getSettingsInstallmentOptionsMode
 import com.adyen.checkout.example.ui.compose.ResultState
 import com.adyen.checkout.example.ui.configuration.CheckoutConfigurationProvider
-import com.adyen.checkout.googlepay.GooglePayComponentState
-import com.adyen.checkout.googlepay.GooglePayUnavailableException
+import com.adyen.checkout.googlepay.old.GooglePayComponentState
+import com.adyen.checkout.googlepay.old.GooglePayUnavailableException
 import com.adyen.checkout.sessions.core.CheckoutSession
 import com.adyen.checkout.sessions.core.CheckoutSessionProvider
 import com.adyen.checkout.sessions.core.CheckoutSessionResult
@@ -53,7 +53,7 @@ internal class SessionsGooglePayViewModel @Inject constructor(
 ) : ViewModel(),
     SessionComponentCallback<GooglePayComponentState> {
 
-    private val checkoutConfiguration = checkoutConfigurationProvider.checkoutConfig
+    private val checkoutConfiguration = checkoutConfigurationProvider.oldCheckoutConfig
 
     private val _googlePayState = MutableStateFlow<SessionsGooglePayState>(SessionsGooglePayState.Loading)
     val googlePayState: StateFlow<SessionsGooglePayState> = _googlePayState.asStateFlow()
@@ -96,7 +96,7 @@ internal class SessionsGooglePayViewModel @Inject constructor(
             getSessionRequest(
                 merchantAccount = keyValueStorage.getMerchantAccount(),
                 shopperReference = keyValueStorage.getShopperReference(),
-                amount = keyValueStorage.getAmount(),
+                amount = keyValueStorage.getOldAmount(),
                 countryCode = keyValueStorage.getCountry(),
                 shopperLocale = keyValueStorage.getShopperLocale(),
                 splitCardFundingSources = keyValueStorage.isSplitCardFundingSources(),

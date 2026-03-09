@@ -13,9 +13,9 @@ import androidx.annotation.VisibleForTesting
 import com.adyen.checkout.core.analytics.internal.AnalyticsManager
 import com.adyen.checkout.core.components.CheckoutCallbacks
 import com.adyen.checkout.core.components.CheckoutConfiguration
-import com.adyen.checkout.core.components.data.model.PaymentMethod
-import com.adyen.checkout.core.components.data.model.PaymentMethodResponse
-import com.adyen.checkout.core.components.data.model.StoredPaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethod
+import com.adyen.checkout.core.components.data.model.paymentmethod.PaymentMethodResponse
+import com.adyen.checkout.core.components.data.model.paymentmethod.StoredPaymentMethod
 import com.adyen.checkout.core.components.internal.ui.PaymentComponent
 import com.adyen.checkout.core.components.internal.ui.model.CommonComponentParams
 import com.adyen.checkout.core.components.internal.ui.model.ComponentParamsBundle
@@ -99,9 +99,7 @@ object PaymentMethodProvider {
         componentParamsBundle: ComponentParamsBundle,
         checkoutCallbacks: CheckoutCallbacks,
     ): PaymentComponent<BasePaymentComponentState> {
-        val txVariant = requireNotNull(paymentMethod.type) {
-            "PaymentMethod type cannot be null. Received: $paymentMethod"
-        }
+        val txVariant = paymentMethod.type
 
         @Suppress("UNCHECKED_CAST")
         return factories[txVariant]?.create(
@@ -112,7 +110,9 @@ object PaymentMethodProvider {
             componentParamsBundle = componentParamsBundle,
             checkoutCallbacks = checkoutCallbacks,
         ) as? PaymentComponent<BasePaymentComponentState> ?: run {
-            // TODO - Errors Propagation [COSDK-85]. Propagate an initialization error via onError()
+            // TODO - Errors Propagation [COSDK-85]. Do we want to use onError() here or throw an exception?
+            // TODO - We could check if a factory is not registered for a supported payment method type then throw a
+            //  different exception, since that means that the module is probably not imported.
             error("Factory for payment method type: $txVariant is not registered.")
         }
     }
@@ -126,9 +126,7 @@ object PaymentMethodProvider {
         componentParamsBundle: ComponentParamsBundle,
         checkoutCallbacks: CheckoutCallbacks,
     ): PaymentComponent<BasePaymentComponentState> {
-        val txVariant = requireNotNull(storedPaymentMethod.type) {
-            "StoredPaymentMethod type cannot be null. Received: $storedPaymentMethod"
-        }
+        val txVariant = storedPaymentMethod.type
 
         @Suppress("UNCHECKED_CAST")
         return storedFactories[txVariant]?.create(

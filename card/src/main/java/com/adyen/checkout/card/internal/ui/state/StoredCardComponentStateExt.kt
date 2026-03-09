@@ -12,7 +12,9 @@ import com.adyen.checkout.card.internal.ui.model.CardComponentParams
 import com.adyen.checkout.core.common.helper.runCompileOnly
 import com.adyen.checkout.core.components.data.PaymentComponentData
 import com.adyen.checkout.core.components.internal.data.provider.SdkDataProvider
-import com.adyen.checkout.core.components.paymentmethod.CardPaymentMethod
+import com.adyen.checkout.core.components.internal.ui.state.model.RequirementPolicy
+import com.adyen.checkout.core.components.paymentmethod.CardDetails
+import com.adyen.checkout.core.error.internal.ComponentError
 import com.adyen.checkout.cse.EncryptedCard
 import com.adyen.checkout.cse.EncryptionException
 import com.adyen.checkout.cse.UnencryptedCard
@@ -26,7 +28,7 @@ internal fun StoredCardComponentState.toPaymentComponentState(
     sdkDataProvider: SdkDataProvider,
     storedPaymentMethodId: String?,
     onEncryptionFailed: (EncryptionException) -> Unit,
-    onPublicKeyNotFound: (RuntimeException) -> Unit,
+    onPublicKeyNotFound: (ComponentError) -> Unit,
 ): CardPaymentComponentState {
     val publicKey = componentParams.publicKey(onPublicKeyNotFound = onPublicKeyNotFound)
         ?: return invalidCardPaymentComponentState()
@@ -37,13 +39,14 @@ internal fun StoredCardComponentState.toPaymentComponentState(
         onEncryptionFailed = onEncryptionFailed,
     ) ?: return invalidCardPaymentComponentState()
 
-    val cardPaymentMethod = createPaymentMethod(
+    val cardDetails = createCardDetails(
         storedCardId = storedPaymentMethodId,
         encryptedCard = encryptedCard,
         sdkDataProvider = sdkDataProvider,
+        isCvcHidden = securityCode.requirementPolicy is RequirementPolicy.Hidden,
     )
 
-    val paymentComponentData = createPaymentComponentData(cardPaymentMethod, componentParams)
+    val paymentComponentData = createPaymentComponentData(cardDetails, componentParams)
 
     return createPaymentComponentState(paymentComponentData)
 }
@@ -56,7 +59,6 @@ private fun StoredCardComponentState.encryptCard(
 ): EncryptedCard? {
     val unencryptedCardBuilder = UnencryptedCard.Builder()
     return try {
-        // TODO - Card. Add isCvcHidden check
         val cvc = securityCode.text
         if (cvc.isNotEmpty()) unencryptedCardBuilder.setCvc(cvc)
         cardEncryptor.encryptFields(unencryptedCardBuilder.build(), publicKey)
@@ -72,10 +74,10 @@ private fun invalidCardPaymentComponentState() = CardPaymentComponentState(
 )
 
 private fun createPaymentComponentData(
-    cardPaymentMethod: CardPaymentMethod,
+    cardDetails: CardDetails,
     componentParams: CardComponentParams
 ) = PaymentComponentData(
-    paymentMethod = cardPaymentMethod,
+    paymentMethod = cardDetails,
     storePaymentMethod = null,
     shopperReference = componentParams.shopperReference,
     order = null,
@@ -83,7 +85,7 @@ private fun createPaymentComponentData(
 )
 
 private fun createPaymentComponentState(
-    paymentComponentData: PaymentComponentData<CardPaymentMethod>,
+    paymentComponentData: PaymentComponentData<CardDetails>,
 ): CardPaymentComponentState {
     return CardPaymentComponentState(
         data = paymentComponentData,
@@ -91,24 +93,25 @@ private fun createPaymentComponentState(
     )
 }
 
-private fun CardComponentParams.publicKey(onPublicKeyNotFound: (RuntimeException) -> Unit): String? {
+private fun CardComponentParams.publicKey(onPublicKeyNotFound: (ComponentError) -> Unit): String? {
     return publicKey ?: run {
-        onPublicKeyNotFound(RuntimeException("Public key is missing."))
+        onPublicKeyNotFound(ComponentError("Public key is missing."))
         null
     }
 }
 
-private fun createPaymentMethod(
+private fun createCardDetails(
     storedCardId: String?,
     encryptedCard: EncryptedCard,
     sdkDataProvider: SdkDataProvider,
-) = CardPaymentMethod(
-    type = CardPaymentMethod.PAYMENT_METHOD_TYPE,
+    isCvcHidden: Boolean,
+) = CardDetails(
+    type = CardDetails.PAYMENT_METHOD_TYPE,
     sdkData = sdkDataProvider.createEncodedSdkData(
         threeDS2SdkVersion = runCompileOnly { ThreeDS2Service.INSTANCE.sdkVersion },
     ),
     storedPaymentMethodId = storedPaymentMethodId(storedCardId),
-    encryptedSecurityCode = encryptedCard.encryptedSecurityCode,
+    encryptedSecurityCode = if (!isCvcHidden) encryptedCard.encryptedSecurityCode else null,
 )
 
 private fun storedPaymentMethodId(storedPaymentMethodId: String?): String {

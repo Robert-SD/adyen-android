@@ -31,14 +31,13 @@ class CommonComponentParamsMapper {
             clientKey = sessionParams?.clientKey ?: checkoutConfiguration.clientKey,
             analyticsParams = AnalyticsParams(
                 analyticsConfiguration = checkoutConfiguration.analyticsConfiguration,
-                clientKey = checkoutConfiguration.clientKey,
             ),
             isCreatedByDropIn = dropInOverrideParams != null,
             amount = sessionParams?.amount
                 ?: dropInOverrideParams?.amount
                 ?: checkoutConfiguration.amount,
-            isSubmitButtonVisible = dropInOverrideParams?.isSubmitButtonVisible
-                ?: checkoutConfiguration.isSubmitButtonVisible ?: true,
+            showSubmitButton = dropInOverrideParams?.showSubmitButton
+                ?: checkoutConfiguration.showSubmitButton ?: true,
             publicKey = publicKey,
         )
         return ComponentParamsBundle(commonComponentParams, sessionParams)
