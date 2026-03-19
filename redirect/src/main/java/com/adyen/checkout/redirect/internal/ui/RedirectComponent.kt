@@ -20,7 +20,6 @@ import com.adyen.checkout.core.analytics.internal.AnalyticsManager
 import com.adyen.checkout.core.analytics.internal.ErrorEvent
 import com.adyen.checkout.core.analytics.internal.GenericEvents
 import com.adyen.checkout.core.common.AdyenLogLevel
-import com.adyen.checkout.core.common.exception.ModelSerializationException
 import com.adyen.checkout.core.common.internal.helper.adyenLog
 import com.adyen.checkout.core.common.internal.helper.bufferedChannel
 import com.adyen.checkout.core.common.internal.model.getStringOrNull
@@ -28,7 +27,7 @@ import com.adyen.checkout.core.components.internal.PaymentDataRepository
 import com.adyen.checkout.core.components.internal.ui.IntentHandlingComponent
 import com.adyen.checkout.core.components.internal.ui.model.ComponentParams
 import com.adyen.checkout.core.components.internal.ui.navigation.CheckoutNavEntry
-import com.adyen.checkout.core.error.internal.ComponentError
+import com.adyen.checkout.core.error.internal.GenericError
 import com.adyen.checkout.core.error.internal.HttpError
 import com.adyen.checkout.core.error.internal.InternalCheckoutError
 import com.adyen.checkout.core.redirect.internal.RedirectHandler
@@ -42,6 +41,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import org.json.JSONException
 import org.json.JSONObject
 
 internal class RedirectComponent(
@@ -134,6 +134,7 @@ internal class RedirectComponent(
     }
 
     private fun handleNativeRedirect(nativeRedirectData: String?, details: JSONObject) {
+        // TODO - Move this to a repository and use runSuspendCatching and remove the catches
         coroutineScope.launch {
             val request = NativeRedirectRequest(
                 redirectData = nativeRedirectData,
@@ -147,10 +148,9 @@ internal class RedirectComponent(
             } catch (e: HttpError) {
                 trackNativeRedirectError("Network error")
                 emitError(e)
-            } catch (e: ModelSerializationException) {
+            } catch (e: JSONException) {
                 trackNativeRedirectError("Serialization error")
-                // TODO - Error propagation. Fix after ModelSerializationException extends from CheckoutError
-                emitError(ComponentError("Serialization error", e))
+                emitError(GenericError("Serialization error", e))
             }
         }
     }
